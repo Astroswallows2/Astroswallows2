@@ -1,0 +1,14 @@
+<component name="libraryTable">
+  <library name="Gradle: Astroswallows2Apk:kibo_rpc_api:unspecified@aar">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.android/build-cache/a5f759f4734922e05e5d552bb969586db48ebdaf/output/jars/classes.jar!/" />
+      <root url="file://$USER_HOME$/.android/build-cache/a5f759f4734922e05e5d552bb969586db48ebdaf/output/res" />
+      <root url="file://$USER_HOME$/.android/build-cache/a5f759f4734922e05e5d552bb969586db48ebdaf/output/AndroidManifest.xml" />
+      <root url="jar://$USER_HOME$/.android/build-cache/a5f759f4734922e05e5d552bb969586db48ebdaf/output/jars/libs/api-1.0-SNAPSHOT.jar!/" />
+      <root url="jar://$USER_HOME$/.android/build-cache/a5f759f4734922e05e5d552bb969586db48ebdaf/output/jars/libs/ff_msgs-0.0.0.jar!/" />
+      <root url="jar://$USER_HOME$/.android/build-cache/a5f759f4734922e05e5d552bb969586db48ebdaf/output/jars/libs/ros-1.0-SNAPSHOT.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
