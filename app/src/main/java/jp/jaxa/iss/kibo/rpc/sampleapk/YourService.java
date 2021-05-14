@@ -10,6 +10,8 @@ import com.google.zxing.RGBLuminanceSource;
 import com.google.zxing.Reader;
 import com.google.zxing.common.HybridBinarizer;
 
+import org.jetbrains.annotations.Contract;
+
 import java.util.Arrays;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -30,16 +32,17 @@ public class YourService extends KiboRpcService {
         api.startMission();
 
         // astrobee is undocked and the mission starts
-        //moveToWrapper(11.71, -9.53, 5.35, 0, 0, 0, 1);
         moveToWrapper(10.3, -9.8, 4.5, 0, 0, 0, 1);
         //api.getTrustedRobotKinematics();
 
         //pointAに移動
-        moveToWrapper(11.21, -10, 5, 0, 0, -1 / Math.sqrt(2), 1 / Math.sqrt(2));
+        //moveToWrapper(11.21, -10, 5, 0, 0, -1 / Math.sqrt(2), 1 / Math.sqrt(2));
+        moveToWrapper(11.3, -10, 5.1, 0, 0, -1 / Math.sqrt(2), 1 / Math.sqrt(2));
         //api.getTrustedRobotKinematics();
 
         /*追加分*/
         Bitmap bmp1_1 = api.getBitmapNavCam();
+        //Bitmap.createBitmap(bitmap, 0,0,960,960)
         Log.e("bmp1_1","has loaded as BitmapDockCam. Bitmap data bmp1_1 is["+bmp1_1);
         Log.e("bmp1_1","Start ZXing QR reading");
         String valueX = readQrcode(bmp1_1);
@@ -52,9 +55,18 @@ public class YourService extends KiboRpcService {
         double aax = pxyz[1];
         double aay = pxyz[2];
         double aaz = pxyz[3];
+
         Log.e("pattern and pointAA x y z","pattern:"+String.valueOf(p)+
                 "[x:"+String.valueOf(aax)+ "y:"+String.valueOf(aay)+ "z:"+String.valueOf(aaz)+"]");
-        moveToWrapper(aax, aay, aaz,0, 0, -0.7071068,0.7071068);
+        //追加はじめ
+        double[] stu = adjustment(p,aax,aaz);
+        double axa = stu[0];
+        //double aya = stu[1];
+        double aza = stu[1];
+        //追加ここまで
+
+        //moveToWrapper(aax, aay, aaz,0, 0, -0.7071068,0.7071068);
+        moveToWrapper(axa, aay, aza,0, 0, -0.7071068,0.7071068);
         Log.e("move to AA","bee finished moving to pointAA.");
 
         // irradiate the laser]
@@ -150,5 +162,36 @@ public class YourService extends KiboRpcService {
             pxyz[i] = Double.parseDouble(stringpxyz[i]);
         }
         return pxyz;
+    }
+    //@org.jetbrains.annotations.Contract(pure = true)
+    @Contract("null -> fail; !null -> !null")
+    public static double[] adjustment(int num1, double num2, double num4)
+    {double[] stu = new double[2];
+        if ((num1 == 1) || (num1 == 8)) {
+            double num22 = num2 - 0.1125;
+            //double aya = num3;
+            double num44 = num4 + 0.0415;
+            stu[0] = num22;
+            stu[1] = num44;
+        } else if ((num1 == 2) || (num1 == 3) || (num1 == 4)) {
+            double num22 = num2 + 0.1125;
+            //double aya = num3;
+            double num44 = num4 + 0.0415;
+            stu[0] = num22;
+            stu[1] = num44;
+        } else if ((num1 == 5) || (num1 == 6)) {
+            double num22 = num2 + 0.1125;
+            //double aya = num3;
+            double num44 = num4 - 0.0415;
+            stu[0] = num22;
+            stu[1] = num44;
+        } else {
+            double num22 = num2 - 0.1125;
+            //double aya = num3;
+            double num44 = num4 - 0.0415;
+            stu[0] = num22;
+            stu[1] = num44;
+        }
+        return stu;
     }
 }

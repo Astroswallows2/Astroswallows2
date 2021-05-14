@@ -1,9 +1,8 @@
 <component name="libraryTable">
   <library name="Gradle: com.android.support:support-media-compat:26.1.0@aar">
     <CLASSES>
-      <root url="jar://$USER_HOME$/.android/build-cache/8daad47811f4d5195674956da836206436389fdc/output/jars/classes.jar!/" />
-      <root url="file://$USER_HOME$/.android/build-cache/8daad47811f4d5195674956da836206436389fdc/output/res" />
-      <root url="file://$USER_HOME$/.android/build-cache/8daad47811f4d5195674956da836206436389fdc/output/AndroidManifest.xml" />
+      <root url="file://$USER_HOME$/.android/build-cache/10f582ec58765095cc1dd21cba0438f8dcaa0bc6/output/res" />
+      <root url="jar://$USER_HOME$/.android/build-cache/10f582ec58765095cc1dd21cba0438f8dcaa0bc6/output/jars/classes.jar!/" />
     </CLASSES>
     <JAVADOC />
     <SOURCES>

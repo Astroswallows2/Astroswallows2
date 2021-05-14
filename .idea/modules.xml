@@ -2,10 +2,10 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Astroswallows2Apk.iml" filepath="$PROJECT_DIR$/.idea/modules/Astroswallows2Apk.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/Astroswallows2Apk.app.iml" filepath="$PROJECT_DIR$/.idea/modules/app/Astroswallows2Apk.app.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/guest_science_library/Astroswallows2Apk.guest_science_library.iml" filepath="$PROJECT_DIR$/.idea/modules/guest_science_library/Astroswallows2Apk.guest_science_library.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/kibo_rpc_api/Astroswallows2Apk.kibo_rpc_api.iml" filepath="$PROJECT_DIR$/.idea/modules/kibo_rpc_api/Astroswallows2Apk.kibo_rpc_api.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Astroswallows2.iml" filepath="$PROJECT_DIR$/Astroswallows2.iml" />
+      <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/guest_science_library/guest_science_library.iml" filepath="$PROJECT_DIR$/guest_science_library/guest_science_library.iml" />
+      <module fileurl="file://$PROJECT_DIR$/kibo_rpc_api/kibo_rpc_api.iml" filepath="$PROJECT_DIR$/kibo_rpc_api/kibo_rpc_api.iml" />
     </modules>
   </component>
 </project>
