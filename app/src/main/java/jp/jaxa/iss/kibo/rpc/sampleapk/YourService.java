@@ -37,12 +37,12 @@ public class YourService extends KiboRpcService {
 
         //pointAに移動
         //moveToWrapper(11.21, -10, 5, 0, 0, -1 / Math.sqrt(2), 1 / Math.sqrt(2));
+        moveToWrapper(11.3, -10, 4.5, 0, 0, -1 / Math.sqrt(2), 1 / Math.sqrt(2));
         moveToWrapper(11.3, -10, 5.1, 0, 0, -1 / Math.sqrt(2), 1 / Math.sqrt(2));
         //api.getTrustedRobotKinematics();
 
         /*追加分*/
         Bitmap bmp1_1 = api.getBitmapNavCam();
-        //Bitmap.createBitmap(bitmap, 0,0,960,960)
         Log.e("bmp1_1","has loaded as BitmapDockCam. Bitmap data bmp1_1 is["+bmp1_1);
         Log.e("bmp1_1","Start ZXing QR reading");
         String valueX = readQrcode(bmp1_1);
@@ -95,7 +95,8 @@ public class YourService extends KiboRpcService {
     // You can add your method
     private void moveToWrapper(double pos_x, double pos_y, double pos_z,
                                double qua_x, double qua_y, double qua_z,
-                               double qua_w) {
+                               double qua_w)
+    {
 
         final int LOOP_MAX = 3;
         final Point point = new Point(pos_x, pos_y, pos_z);
@@ -106,7 +107,7 @@ public class YourService extends KiboRpcService {
 
         int loopCounter = 0;
         while (!result.hasSucceeded() || loopCounter < LOOP_MAX) {
-            Log.e("Moveto","Bee start moving.");
+            Log.e("Moveto","Bee start moving to x:"+pos_x+" y:"+pos_y+" z:"+pos_z);
             result = api.moveTo(point, quaternion, true);
             ++loopCounter;
         }
@@ -114,14 +115,22 @@ public class YourService extends KiboRpcService {
 
     public String readQrcode(Bitmap bitmap)
     {
+        final int navcamWidth = 1280;
+        final int navcamHeight = 960;
+        final int trimStartx = 427;
+        final int trimStarty = 240;
+        final int trimWidth = 427;
+        final int trimHeight = 480;
+
+        Bitmap bitmap_trim = Bitmap.createBitmap(bitmap, trimStartx,trimStarty,trimWidth,trimHeight);
         // Bitmap のサイズを取得して、ピクセルデータを取得する
-        int width = bitmap.getWidth();
+        int width = bitmap_trim.getWidth();
         Log.d("readQR", "bitmap width="+width);
-        int height = bitmap.getHeight();
+        int height = bitmap_trim.getHeight();
         Log.d("readQR", "bitmap height="+height);
         int[] pixels = new int[width * height];
         Log.e("bmp1_1","getPixels start.");
-        bitmap.getPixels(pixels, 0, width, 0, 0, width, height);
+        bitmap_trim.getPixels(pixels, 0, width, 0, 0, width, height);
         Log.e("bmp1_1","getPixels finished.");
         try {
             // zxing で扱える BinaryBitmap形式に変換する
@@ -163,6 +172,7 @@ public class YourService extends KiboRpcService {
         }
         return pxyz;
     }
+
     //@org.jetbrains.annotations.Contract(pure = true)
     @Contract("null -> fail; !null -> !null")
     public static double[] adjustment(int num1, double num2, double num4)
