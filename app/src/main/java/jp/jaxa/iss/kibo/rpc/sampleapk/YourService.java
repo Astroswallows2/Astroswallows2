@@ -4,15 +4,22 @@ import android.graphics.Bitmap;
 import android.util.Log;
 
 import com.google.zxing.BinaryBitmap;
+import com.google.zxing.ChecksumException;
+import com.google.zxing.DecodeHintType;
+import com.google.zxing.FormatException;
 import com.google.zxing.LuminanceSource;
 import com.google.zxing.MultiFormatReader;
+import com.google.zxing.NotFoundException;
 import com.google.zxing.RGBLuminanceSource;
 import com.google.zxing.Reader;
 import com.google.zxing.common.HybridBinarizer;
+import com.google.zxing.qrcode.QRCodeReader;
 
 import org.jetbrains.annotations.Contract;
 
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -27,7 +34,8 @@ import jp.jaxa.iss.kibo.rpc.api.KiboRpcService;
 
 public class YourService extends KiboRpcService {
     @Override
-    protected void runPlan1() {
+    protected void runPlan1()
+    {
         // astrobee is undocked and the mission starts
         api.startMission();
 
@@ -40,6 +48,9 @@ public class YourService extends KiboRpcService {
         moveToWrapper(11.3, -10, 4.5, 0, 0, -1 / Math.sqrt(2), 1 / Math.sqrt(2));
         moveToWrapper(11.3, -10, 5.1, 0, 0, -1 / Math.sqrt(2), 1 / Math.sqrt(2));
         //api.getTrustedRobotKinematics();
+
+
+
 
         /*追加分*/
         Bitmap bmp1_1 = api.getBitmapNavCam();
@@ -97,7 +108,6 @@ public class YourService extends KiboRpcService {
                                double qua_x, double qua_y, double qua_z,
                                double qua_w)
     {
-
         final int LOOP_MAX = 3;
         final Point point = new Point(pos_x, pos_y, pos_z);
         final Quaternion quaternion = new Quaternion((float) qua_x, (float) qua_y,
@@ -106,7 +116,8 @@ public class YourService extends KiboRpcService {
         Result result = api.moveTo(point, quaternion, true);
 
         int loopCounter = 0;
-        while (!result.hasSucceeded() || loopCounter < LOOP_MAX) {
+        while (!result.hasSucceeded() || loopCounter < LOOP_MAX)
+        {
             Log.e("Moveto","Bee start moving to x:"+pos_x+" y:"+pos_y+" z:"+pos_z);
             result = api.moveTo(point, quaternion, true);
             ++loopCounter;
@@ -115,12 +126,13 @@ public class YourService extends KiboRpcService {
 
     public String readQrcode(Bitmap bitmap)
     {
+        String result = null;
         final int navcamWidth = 1280;
         final int navcamHeight = 960;
-        final int trimStartx = 427;
-        final int trimStarty = 240;
-        final int trimWidth = 427;
-        final int trimHeight = 480;
+        final int trimStartx = 512;
+        final int trimStarty = 320;
+        final int trimWidth = 256;
+        final int trimHeight = 380;
 
         Bitmap bitmap_trim = Bitmap.createBitmap(bitmap, trimStartx,trimStarty,trimWidth,trimHeight);
         // Bitmap のサイズを取得して、ピクセルデータを取得する
@@ -132,7 +144,8 @@ public class YourService extends KiboRpcService {
         Log.e("bmp1_1","getPixels start.");
         bitmap_trim.getPixels(pixels, 0, width, 0, 0, width, height);
         Log.e("bmp1_1","getPixels finished.");
-        try {
+        try
+        {
             // zxing で扱える BinaryBitmap形式に変換する
             Log.e("bmp1_1","RGB start.");
             LuminanceSource source = new RGBLuminanceSource(width, height, pixels);
@@ -142,20 +155,35 @@ public class YourService extends KiboRpcService {
             Log.e("bmp1_1","binarybitmap finished.");
             // zxing で画像データを読み込み解析する
             Log.e("bmp1_1","multiformatreader start.");
-            Reader reader = new MultiFormatReader();
+            QRCodeReader reader = new QRCodeReader();
             Log.e("bmp1_1","multiformatreader finished.");
             Log.e("bmp1_1","decord start.");
             com.google.zxing.Result decodeResult = reader.decode(binaryBitmap);
             Log.e("bmp1_1","decord finished.");
             // 解析結果を取得する
             Log.e("bmp1_1","gettext start.");
-            String result = decodeResult.getText();
+            result = decodeResult.getText();
             Log.d("readQR", result);
             return result;
-            } catch (Exception e) {
-                    Log.d("readQR", e.getLocalizedMessage());
-                    return null;
-            }
+        }
+        /*
+        catch (Exception e)
+        {
+            Log.e("readQR", e.getLocalizedMessage());
+            return null;
+        }
+         */
+        catch (NotFoundException e)
+        {
+            Log.e("readQR", "NotFoundException occur : " + e.getMessage());;
+            return null;
+        } catch (FormatException e) {
+            Log.e("readQR", "CheckSumException occur : " + e.getMessage());
+            return null;
+        } catch (ChecksumException e) {
+            Log.e("readQR", "FormatException occur : " + e.getMessage());
+            return null;
+        }
     }
 
     public static double[] qrtopxyz(String qr)
