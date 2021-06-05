@@ -1,31 +1,28 @@
 package jp.jaxa.iss.kibo.rpc.sampleapk;
 
-import android.graphics.Bitmap;
-import android.util.Log;
-import org.opencv.aruco.Aruco;
-import com.google.zxing.BinaryBitmap;
-import com.google.zxing.ChecksumException;
-import com.google.zxing.FormatException;
-import com.google.zxing.LuminanceSource;
-import com.google.zxing.NotFoundException;
-import com.google.zxing.RGBLuminanceSource;
-import com.google.zxing.common.HybridBinarizer;
-import com.google.zxing.qrcode.QRCodeReader;
-import android.text.TextUtils;
-import org.jetbrains.annotations.Contract;
-import org.opencv.aruco.Dictionary;
-import org.opencv.core.Mat;
+        import android.graphics.Bitmap;
+        import android.util.Log;
+        import com.google.zxing.BinaryBitmap;
+        import com.google.zxing.ChecksumException;
+        import com.google.zxing.FormatException;
+        import com.google.zxing.LuminanceSource;
+        import com.google.zxing.NotFoundException;
+        import com.google.zxing.RGBLuminanceSource;
+        import com.google.zxing.common.HybridBinarizer;
+        import com.google.zxing.qrcode.QRCodeReader;
 
-import java.util.Arrays;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+        import org.jetbrains.annotations.Contract;
+        import org.opencv.core.Mat;
 
-import gov.nasa.arc.astrobee.Result;
-import gov.nasa.arc.astrobee.types.Point;
-import gov.nasa.arc.astrobee.types.Quaternion;
-import jp.jaxa.iss.kibo.rpc.api.KiboRpcService;
-import org.opencv.calib3d.Calib3d;
-import org.opencv.core.CvType;
+        import java.util.Arrays;
+        import java.util.regex.Matcher;
+        import java.util.regex.Pattern;
+
+        import gov.nasa.arc.astrobee.Result;
+        import gov.nasa.arc.astrobee.types.Point;
+        import gov.nasa.arc.astrobee.types.Quaternion;
+        import jp.jaxa.iss.kibo.rpc.api.KiboRpcService;
+
 /**
  * Class meant to handle commands from the Ground Data System and execute them in Astrobee
  */
@@ -70,21 +67,35 @@ public class YourService extends KiboRpcService {
 
         //read ARcode
         Log.e("start read ARcode", "");
-        Mat EulerAngles0 = readARcode();
-        Mat rotationMat = new Mat(3, 3, CvType.CV_64F);
-        Log.e("finish read ARcode", String.valueOf(EulerAngles0));
-        Calib3d.Rodrigues(EulerAngles0, rotationMat);
-        Log.e("finish read ARcode", rotationMat.dump());
-        int corners = readARcode2();
-        Log.e("corners", String.valueOf(corners));
+        //ターゲットの中心座標を４つのARの位置から求める
+        double[] target_center = readARcode();
+        Log.e("finished reading ARcode", Arrays.toString(target_center));
+        //opencvの座標系からastrobeeの座標系に変換
+        target_center = change_origin(target_center);
+        Log.e("finished changing the origin", Arrays.toString(target_center));
+        double[] navcam = {0.1177, -0.0422, -0.0826};
+        double[] laser = {0.1302, 0.0572, -0.1111};
+        double[] beam = {1, 0, 0};
+        //レーザーをターゲット中心に向けるクォータニオンq_target
+        Log.e("calculate q_target", "");
+        Quaternion q_target = rotatetotarget(target_center, navcam, laser, beam);
+
+        //1つのARタグからターゲット中心の座標とクォータニオンを求める処理を書く．
+        String del = ":";
+        Log.e("finish calculating q_target", String.valueOf(q_target.getX()) + del + String.valueOf(q_target.getY()) + del + String.valueOf(q_target.getZ()) + del + String.valueOf(q_target.getW()));
+        relativemoveToWrapper(0,0,0, q_target.getX(), q_target.getY(), q_target.getZ(), q_target.getW());
+        Log.e("finish rotating", "");
+        //Log.e("finish read ARcode", rotationMat.dump());
+        //int corners = readARcode2();
+        //Log.e("corners", String.valueOf(corners));
         /*
         String[][] EulerAngles0_s = new String[3][3];
-        EulerAngles0_s[1][0] = String.valueOf(EulerAngles0[1][0]);
+        EulerAngles0_s[1][0] = String.valueOf(target_center[1][0]);
         Log.e("rotaionMatrix2", EulerAngles0_s[1][0]);
         //なんかおかしい
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
-                EulerAngles0_s[i][j] = String.valueOf(EulerAngles0[i][j]);
+                EulerAngles0_s[i][j] = String.valueOf(target_center[i][j]);
                 Log.e("rotaionMatrix2", EulerAngles0_s[i][j]);
                 Log.e("i", String.valueOf(i));
                 Log.e("j", String.valueOf(j));
@@ -102,10 +113,10 @@ public class YourService extends KiboRpcService {
         //moveToA''
         Log.e("rotationMatrix_all", EulerAngles0_s3);
         */
-
-
+        /*
         moveToWrapper(axa, aya, aza, 0, 0, -0.7071068, 0.7071068);
         Log.e("move to AA", "bee finished moving to pointAA.");
+        */
         // irradiate the laser
 
 
@@ -161,6 +172,44 @@ public class YourService extends KiboRpcService {
             ++loopCounter;
         }
     }
+
+    private void relativemoveToWrapper(double pos_x, double pos_y, double pos_z,
+                                       double qua_x, double qua_y, double qua_z,
+                                       double qua_w) {
+        final int LOOP_MAX = 3;
+        final Point point = new Point(pos_x, pos_y, pos_z);
+        final Quaternion quaternion = new Quaternion((float) qua_x, (float) qua_y,
+                (float) qua_z, (float) qua_w);
+
+        Result result = api.relativeMoveTo(point, quaternion, true);
+
+        int loopCounter = 0;
+        while (result.hasSucceeded() && loopCounter < LOOP_MAX) {
+            Log.e("Moveto", "Bee start moving to x:" + pos_x + " y:" + pos_y + " z:" + pos_z);
+            Log.e("Loop Counter relative", "loop counter is" + loopCounter);
+
+            result = api.relativeMoveTo(point, quaternion, true);
+            ++loopCounter;
+        }
+    }
+
+    public double[] change_origin(double[] point) {
+        double[] changed_point = new double[3];
+        changed_point[0] = point[2];
+        changed_point[1] = point[0];
+        changed_point[2] = point[1];
+        return changed_point;
+    }
+
+/*
+    public double[] change_origin(double[] point) {
+        double[] changed_point = new double[3];
+        changed_point[0] = point[0];
+        changed_point[1] = -point[2];
+        changed_point[2] = point[1];
+        return changed_point;
+    }
+    */
 
     public String readQrcode(Bitmap bitmap) {
         //final int navcamWidth = 1280;
@@ -280,13 +329,29 @@ public class YourService extends KiboRpcService {
         return stu;
     }
 
-    public Mat readARcode() {
+    public double[] readARcode() {
         Mat cameraMatrix = AR.makeCamMat();
         Mat distortionCoefficients = AR.makeDistCoef();
         Mat mat3 = api.getMatNavCam();
-        Mat EulerAngles0 = AR.detectMarker(mat3, cameraMatrix, distortionCoefficients);
-        return EulerAngles0;
+        double[] target_center = AR.detectTarget(mat3, cameraMatrix, distortionCoefficients);
+        return target_center;
     }
+
+    public String readARcode3() {
+        Mat cameraMatrix = AR.makeCamMat();
+        Mat distortionCoefficients = AR.makeDistCoef();
+        Mat mat3 = api.getMatNavCam();
+        String target_center = AR.detectTarget2(mat3, cameraMatrix, distortionCoefficients);
+        return target_center;
+    }
+
+    public void readARcode4() {
+        Mat cameraMatrix = AR.makeCamMat();
+        Mat distortionCoefficients = AR.makeDistCoef();
+        Mat mat3 = api.getMatNavCam();
+        AR.detectTarget3(mat3, cameraMatrix, distortionCoefficients);
+    }
+
 
     public int readARcode2() {
         Mat cameraMatrix = AR.makeCamMat();
@@ -307,4 +372,19 @@ public class YourService extends KiboRpcService {
 
  */
     }
+
+    public Quaternion rotatetotarget(double[] target_center, double[] navcam, double[] laser, double[] beam) {
+        //ビームの長さk
+        target_center = M.addVec(target_center, navcam);
+        double k =  Math.sqrt(Math.pow(target_center[0],2) + Math.pow(target_center[1],2) + Math.pow(target_center[2],2)
+                - Math.pow(laser[1], 2) - Math.pow(laser[2], 2) - laser[0]);
+        Log.e("k", String.valueOf(k));
+        //回転前のビームの先端．ターゲット中心ベクトルと大きさ同じ
+        double[] target_center_beam = M.addVec(laser, M.scalMul(beam, k));
+        Log.e("target_center_beam", Arrays.toString(target_center_beam));
+        Log.e("target_center", Arrays.toString(target_center));
+        Quaternion q_target = M.diffv2v_2(target_center, target_center_beam);
+        return q_target;
+    }
+
 }

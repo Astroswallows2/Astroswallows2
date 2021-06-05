@@ -1,9 +1,8 @@
 package jp.jaxa.iss.kibo.rpc.sampleapk;
 
 import gov.nasa.arc.astrobee.types.Quaternion;
-import gov.nasa.arc.astrobee.types.Vec3d;
 
-public class MathCalculation {
+public class M {
     public static boolean isZero(double d){
         double min = 0.00001;
         if(-d > min && d < min){
@@ -139,16 +138,16 @@ public class MathCalculation {
 
     //Calculate a rotation q from vec1 to vec2
     public static Quaternion diffv2v(double vec1[],double vec2[]){
-        double v12[] =MathCalculation.crossProd(vec1,vec2);
+        double v12[] = M.crossProd(vec1,vec2);
 
-        double e[] = MathCalculation.scalDiv(v12,MathCalculation.normVec(v12));
-        double f = Math.acos((MathCalculation.innerProd(vec1,vec2))/(MathCalculation.normVec(vec1)*MathCalculation.normVec(vec2)));
+        double e[] = M.scalDiv(v12, M.normVec(v12));
+        double f = Math.acos((M.innerProd(vec1,vec2))/(M.normVec(vec1)* M.normVec(vec2)));
 
         android.util.Log.e("AstroSwallows", "[mathCalculation] diffv2v.e="+java.util.Arrays.toString(e));
         String f_val = String.valueOf(f);
         android.util.Log.e("AstroSwallows", "[mathCalculation] diffv2v.f="+f_val);
 
-        double q_v[] = MathCalculation.scalMul(e,Math.sin(f/2));
+        double q_v[] = M.scalMul(e,Math.sin(f/2));
         return  new Quaternion((float)q_v[0],(float)q_v[1],(float)q_v[2],(float)Math.cos(f/2));
 
     }
@@ -160,16 +159,16 @@ public class MathCalculation {
         double q[] = new double[4];
         double epsilon = 0.0002;
 
-        double c[] =MathCalculation.crossProd(vec2,vec1);
+        double c[] = M.crossProd(vec2,vec1);
         double d = normVec(c);
         c = normalize(c);
-        double ip =MathCalculation.innerProd(vec2,vec1);
+        double ip = M.innerProd(vec2,vec1);
 
 
         if(d<epsilon || 1.0 < ip){
             if(ip < (epsilon-1.0)){
                 double vec1_1[] = {-vec1[1],vec1[2],vec1[0]};
-                c = normalize(MathCalculation.crossProd(vec2,vec1));
+                c = normalize(M.crossProd(vec2,vec1));
                 q[0] = c[0];
                 q[1] = c[1];
                 q[2] = c[2];
