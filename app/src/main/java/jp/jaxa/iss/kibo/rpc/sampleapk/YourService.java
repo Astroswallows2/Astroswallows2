@@ -41,14 +41,15 @@ public class YourService extends KiboRpcService {
         //pointAに二段階で移動
         //moveToWrapper(11.21, -10, 5, 0, 0, -1 / Math.sqrt(2), 1 / Math.sqrt(2));
         moveToWrapper(11.3, -10, 4.5, 0, 0, -1 / Math.sqrt(2), 1 / Math.sqrt(2));
-        moveToWrapper(11.3, -10, 5.1, 0, 0, -1 / Math.sqrt(2), 1 / Math.sqrt(2));
+        moveToWrapper(11.3, -10, 4.95, 0, 0, -1 / Math.sqrt(2), 1 / Math.sqrt(2));
         //api.getTrustedRobotKinematics();
 
-        Log.e("bmp1_1","Start ZXing QR reading");
+
+        Log.e("bmp1_1", "Start ZXing QR reading");
         String valueX = readQRcodeWrapper();
-        Log.e("bmp1_1","Finished ZXing QR reading. String valueX is[" + valueX + "]");
+        Log.e("bmp1_1", "Finished ZXing QR reading. String valueX is[" + valueX + "]");
         api.sendDiscoveredQR(valueX);
-        Log.e("bmp1_1","QR code valueX has sent.");
+        Log.e("bmp1_1", "QR code valueX has sent.");
         double[] pxyz = qrtopxyz(valueX);
         Log.e("pattern and pointAA","[pattern, x, y, z]="  + Arrays.toString(pxyz));
 
@@ -106,13 +107,15 @@ public class YourService extends KiboRpcService {
         final Point point = new Point(pos_x, pos_y, pos_z);
         final Quaternion quaternion = new Quaternion((float) qua_x, (float) qua_y,
                 (float) qua_z, (float) qua_w);
-
+        Log.e("Moveto","Bee start moving to x:"+pos_x+" y:"+pos_y+" z:"+pos_z);
         Result result = api.moveTo(point, quaternion, true);
 
         int loopCounter = 0;
-        while (!result.hasSucceeded() || loopCounter < LOOP_MAX)
+        //条件文&&に変更
+        while (!result.hasSucceeded() && loopCounter < LOOP_MAX)
         {
             Log.e("Moveto","Bee start moving to x:"+pos_x+" y:"+pos_y+" z:"+pos_z);
+            Log.e("Moveto","loopCounter = "+loopCounter);
             result = api.moveTo(point, quaternion, true);
             ++loopCounter;
         }
@@ -123,7 +126,7 @@ public class YourService extends KiboRpcService {
         //final int navcamWidth = 1280;
         //final int navcamHeight = 960;
         final int trimStartx = 480;
-        final int trimStarty = 320;
+        final int trimStarty = 500;
         final int trimWidth = 320;
         final int trimHeight = 380;
 
@@ -167,7 +170,7 @@ public class YourService extends KiboRpcService {
         catch (NotFoundException e)
         {
             //QRが見つからなかったとき
-            Log.e("readQR", "NotFoundException occur : " + e.getMessage());;
+            Log.e("readQR", "NotFoundException occur : " + e.getMessage());
             return null;
         } catch (FormatException e) {
             Log.e("readQR", "CheckSumException occur : " + e.getMessage());
