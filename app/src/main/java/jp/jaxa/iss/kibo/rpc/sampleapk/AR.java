@@ -48,14 +48,14 @@ public class AR{
 
         Mat rotationMatrix = new Mat(), translationVectors = new Mat();
         Aruco.estimatePoseSingleMarkers(corners, 0.05f, cameraMatrix, distortionCoefficients, rotationMatrix, translationVectors);
-        /*
+
         String del = ":";
-        String value = rotationMatrix.dump() + del + translationVectors.dump() + del + cameraMatrix.dump();
-        */
+        String value = rotationMatrix.dump() + del + translationVectors.dump();
+
         //List<Double> trans_vectors = new List<Double>();
         //Converters.Mat_to_vector_double(translationVectors, trans_vectors);
+        Log.e("rotation vectors and translation vectors", value);
         double AR1[] = translationVectors.get(0,0);
-
         double AR2[] = translationVectors.get(1,0);
         double AR3[] = translationVectors.get(2,0);
         double AR4[] = translationVectors.get(3,0);
