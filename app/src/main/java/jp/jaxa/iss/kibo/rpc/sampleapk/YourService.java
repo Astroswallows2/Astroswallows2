@@ -40,7 +40,9 @@ public class YourService extends KiboRpcService {
         //pointAに二段階で移動
         //moveToWrapper(11.21, -10, 5, 0, 0, -1 / Math.sqrt(2), 1 / Math.sqrt(2));
         moveToWrapper(11.3, -10, 4.5, 0, 0, -1 / Math.sqrt(2), 1 / Math.sqrt(2));
+
         moveToWrapper(11.3, -10, 4.95, 0, 0, -1 / Math.sqrt(2), 1 / Math.sqrt(2));
+
         //api.getTrustedRobotKinematics();
 
 
@@ -57,13 +59,38 @@ public class YourService extends KiboRpcService {
         double aax = pxyz[1];
         double aay = pxyz[2];
         double aaz = pxyz[3];
+
         Log.e("pattern and pointAA x y z", "pattern:" + p + "[x:" + aax + "y:" + aay + "z:" + aaz + "]");
+
+        Log.e("pattern and pointAA x y z","pattern:"+ p + "[x:" + aax + "y:" + aay + "z:" + aaz + "]");
+        //relaypoint sitei
+
+        if (p > 2) {
+            double[] relay1 = relaypoint1(p,aax,aay,aaz);
+            double relay1x = relay1[0];
+            double relay1y = -9.8;
+            double relay1z = relay1[1];
+            moveToWrapper(relay1x, relay1y, relay1z, 0, 0, -0.7071068, 0.7071068);
+            Log.e("move to relaypoint1","bee finished moving to relaypoint1.");
+        }
+        if ((p == 5)||(p == 6)||(p == 7)) {
+            double[] relay2 = relaypoint2(p,aax,aay,aaz);
+            double relay2x = relay2[0];
+            double relay2y = -9.8;
+            double relay2z = relay2[1];
+            moveToWrapper(relay2x, relay2y, relay2z, 0, 0, -0.7071068, 0.7071068);
+            Log.e("move to relaypoint2","bee finished moving to relaypoint2.");
+        }
+        //追加ここまで
 
         //ARからターゲットまでの距離を考えて補正
         double[] stu = adjustment(p, aax, aaz);
         double axa = stu[0];
         double aya = aay - 0.2;
         double aza = stu[1];
+
+        moveToWrapper(axa, aay, aza,0, 0, -0.7071068,0.7071068);
+        Log.e("move to AA","bee finished moving to pointAA.");
 
         //read ARcode
         Log.e("start read ARcode", "");
@@ -129,6 +156,7 @@ public class YourService extends KiboRpcService {
         api.laserControl(true);
 
         // Take a snapshot
+
         Log.e("Snapshot", "Bee start taking a snapshot .");
         api.takeSnapshot();
         Log.e("Snapshot", "Bee finished taking a snapshot .");
@@ -216,10 +244,12 @@ public class YourService extends KiboRpcService {
     public String readQrcode(Bitmap bitmap) {
         //final int navcamWidth = 1280;
         //final int navcamHeight = 960;
+
         final int trimStartx = 480;
         final int trimStarty = 500;
         final int trimWidth = 320;
         final int trimHeight = 380;
+
 
         //トリミング作業
         Bitmap bitmap_trim = Bitmap.createBitmap(bitmap, trimStartx, trimStarty, trimWidth, trimHeight);
@@ -303,32 +333,39 @@ public class YourService extends KiboRpcService {
     public static double[] adjustment(int num1, double num2, double num4) {
         double[] stu = new double[2];
         if ((num1 == 1) || (num1 == 8)) {
-            double num22 = num2 - 0.1125;
+            double num22 = num2;// - 0.1125;
             //double aya = num3;
-            double num44 = num4 + 0.0415;
+            double num44 = num4;// + 0.0415;
             stu[0] = num22;
             stu[1] = num44;
-        } else if ((num1 == 2) || (num1 == 3) || (num1 == 4)) {
-            double num22 = num2 + 0.1125;
+        } else if ((num1 == 2) || (num1 == 3)) {
+            double num22 = num2;// + 0.11255;
             //double aya = num3;
-            double num44 = num4 + 0.0415;
+            double num44 = num4;// + 0.0415;
             stu[0] = num22;
             stu[1] = num44;
-        } else if ((num1 == 5) || (num1 == 6)) {
-            double num22 = num2 + 0.1125;
+        } else if (num1 == 4){
+            double num22 = num2;// + 0.11255;
             //double aya = num3;
-            double num44 = num4 - 0.0415;
+            double num44 = num4;// + 0.0415;
+            stu[0] = num22;
+            stu[1] = num44;
+        }else if ((num1 == 5) || (num1 == 6)) {
+            double num22 = num2;// + 0.1125;
+            //double aya = num3;
+            double num44 = num4;// - 0.0415;
             stu[0] = num22;
             stu[1] = num44;
         } else {
-            double num22 = num2 - 0.1125;
+            double num22 = num2;// - 0.1125;
             //double aya = num3;
-            double num44 = num4 - 0.0415;
+            double num44 = num4;// - 0.0415;
             stu[0] = num22;
             stu[1] = num44;
         }
         return stu;
     }
+
 
     public double[] readARcode() {
         Mat cameraMatrix = AR.makeCamMat();
@@ -360,19 +397,55 @@ public class YourService extends KiboRpcService {
         Mat mat3 = api.getMatNavCam();
         int corners = AR.MarkerImage(mat3, cameraMatrix, distortionCoefficients);
         return corners;
+    }
 /*
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
         if(result != null) {
             Log.d("readQR", result.getContents());
+*/
+
+    @Contract("null -> fail; !null -> !null")
+    public static double[] relaypoint1(int num1, double num2, double num3, double num4)
+    {double[] stu = new double[2];
+        if (num1 == 3) {
+            double num22 = 11.2;
+            //double aya = num3;
+            double num44 = 4.8;
+            stu[0] = num22;
+            stu[1] = num44;
+        } else if (num1 == 4) {
+            double num22 = 11.1;
+            //double aya = num3;
+            double num44 = 4.8;
+            stu[0] = num22;
+            stu[1] = num44;
+        } else if ((num1 == 5) || (num1 == 6)) {
+            double num22 = 10.8;
+            //double aya = num3;
+            double num44 = 4.8;
+            stu[0] = num22;
+            stu[1] = num44;
+        } else if (num1 == 7) {
+            double num22 = 11.5;
+            //double aya = num3;
+            double num44 = 4.8;
+            stu[0] = num22;
+            stu[1] = num44;
+
         } else {
-            super.onActivityResult(requestCode, resultCode, data);
+            double num22 = 11.3;
+            //double aya = num3;
+            double num44 = 5.4;
+            stu[0] = num22;
+            stu[1] = num44;
         }
+        return stu;
     }
 
- */
-    }
+
+
 
     public Quaternion rotatetotarget(double[] target_center, double[] navcam, double[] laser, double[] beam) {
         //ビームの長さk
@@ -386,6 +459,26 @@ public class YourService extends KiboRpcService {
         Log.e("target_center", Arrays.toString(target_center));
         Quaternion q_target = M.diffv2v_2(target_center, target_center_beam);
         return q_target;
+    }
+
+
+    @Contract("null -> fail; !null -> !null")
+    public static double[] relaypoint2(int num1, double num2, double num3, double num4)
+    {double[] stu = new double[2];
+        if ((num1 == 5) || (num1 == 6)) {
+            double num22 = 10.8;
+            //double aya = num3;
+            double num44 = 5.4;
+            stu[0] = num22;
+            stu[1] = num44;
+        } else {
+            double num22 = 11.5;
+            //double aya = num3;
+            double num44 = 5.4;
+            stu[0] = num22;
+            stu[1] = num44;
+        }
+        return stu;
     }
 
 }

@@ -1,8 +1,8 @@
 <component name="libraryTable">
   <library name="Gradle: Astroswallows2:guest_science_library:unspecified@aar">
     <CLASSES>
-      <root url="file://$USER_HOME$/.android/build-cache/fef7cf26507ead4ccddbad0b45e4765e1a53eaf1/output/res" />
-      <root url="jar://$USER_HOME$/.android/build-cache/fef7cf26507ead4ccddbad0b45e4765e1a53eaf1/output/jars/classes.jar!/" />
+      <root url="jar://$USER_HOME$/.android/build-cache/f0698f9bf5b79cdcfb52edf9b38c1be1588aed16/output/jars/classes.jar!/" />
+      <root url="file://$USER_HOME$/.android/build-cache/f0698f9bf5b79cdcfb52edf9b38c1be1588aed16/output/res" />
     </CLASSES>
     <JAVADOC />
     <SOURCES />
