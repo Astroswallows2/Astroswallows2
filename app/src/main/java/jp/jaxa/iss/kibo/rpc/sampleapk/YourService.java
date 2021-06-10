@@ -32,17 +32,20 @@ public class YourService extends KiboRpcService {
     protected void runPlan1() {
         // astrobee is undocked and the mission starts
         api.startMission();
+        Mat cameraMatrix =AR.makeCamMat();
+        Mat distortionCoefficients = AR.makeDistCoef();
+        Point pointA1 = new Point(10.3,-9.8,4.5);
+        Quaternion quatA1 = new Quaternion(0,0,0,1);
+        Point pointA2 = new Point(11.35,-10,4.5);
+        Quaternion quatA2 = new Quaternion(0,0,-0.707f,0.707f);
+        Point pointA3 = new Point(11.35,-10,4.95);
+        Quaternion quatA3 = new Quaternion(0,0,-0.707f,0.707f);
 
-        // astrobee is undocked and the mission starts
-        moveToWrapper(10.3, -9.8, 4.5, 0, 0, 0, 1);
-        //api.getTrustedRobotKinematics();
+        moveToWrapper2(pointA1,quatA1);
 
         //pointAに二段階で移動
-        //moveToWrapper(11.21, -10, 5, 0, 0, -1 / Math.sqrt(2), 1 / Math.sqrt(2));
-        moveToWrapper(11.3, -10, 4.5, 0, 0, -1 / Math.sqrt(2), 1 / Math.sqrt(2));
-        moveToWrapper(11.3, -10, 4.95, 0, 0, -1 / Math.sqrt(2), 1 / Math.sqrt(2));
-        //api.getTrustedRobotKinematics();
-
+        moveToWrapper2(pointA2,quatA2);
+        moveToWrapper2(pointA3,quatA3);
 
         Log.e("bmp1_1", "Start ZXing QR reading");
         String valueX = readQRcodeWrapper();
@@ -58,6 +61,9 @@ public class YourService extends KiboRpcService {
         double aay = pxyz[2];
         double aaz = pxyz[3];
         Log.e("pattern and pointAA x y z", "pattern:" + p + "[x:" + aax + "y:" + aay + "z:" + aaz + "]");
+
+        //A'への移動経路
+        pathplan(p,aax,aay,aaz,pointA3,quatA3);
 
         //ARからターゲットまでの距離を考えて補正
         double[] stu = adjustment(p, aax, aaz);
@@ -171,6 +177,20 @@ public class YourService extends KiboRpcService {
             Log.e("Moveto","Bee start moving to x:"+pos_x+" y:"+pos_y+" z:"+pos_z);
             Log.e("Moveto","loopCounter = "+loopCounter);
             result = api.moveTo(point, quaternion, true);
+            ++loopCounter;
+        }
+    }
+
+    private void moveToWrapper2(Point point,Quaternion quat) {
+        final int LOOP_MAX = 3;
+        Result result = api.moveTo(point, quat, true);
+        int loopCounter = 0;
+        while (!result.hasSucceeded() || loopCounter < LOOP_MAX) {
+            Log.e("Moveto", "Bee start moving to x:" + point.getX()
+                    + " y:" + point.getY() + " z:" + point.getZ());
+            Log.e("Loop Counter", "loop counter is" + loopCounter);
+
+            result = api.moveTo(point, quat, true);
             ++loopCounter;
         }
     }
@@ -328,6 +348,32 @@ public class YourService extends KiboRpcService {
             stu[1] = num44;
         }
         return stu;
+    }
+    
+    //A'への経路パターン別
+    //adx,ady,adzがA’の座標pxyz[]
+    private void pathplan(int p, double adx, double ady, double adz, Point pointA,Quaternion quatA) {
+        Point pointAd = new Point(adx,ady,adz);
+        if ((p == 1) || (p == 2) ||(p == 8)) {
+            moveToWrapper2(pointAd,quatA);
+        } else if ((p == 3) || (p == 4)) {
+            //2段階移動(1回目：xyのみ移動，2回目：zのみ移動)
+            Point pointAA = new Point(adx,ady,pointA.getZ());
+            moveToWrapper2(pointAA,quatA);
+            moveToWrapper2(pointAd,quatA);
+        } else if ((p == 5) || (p == 6)) {
+            Point pointAA1 = new Point(10.8,ady,pointA.getZ());
+            Point pointAA2 = new Point(10.8,ady,adz);
+            moveToWrapper2(pointAA1,quatA);
+            moveToWrapper2(pointAA2,quatA);
+            moveToWrapper2(pointAd,quatA);
+        } else {
+            Point pointAA1 = new Point(11.5,ady,pointA.getZ());
+            Point pointAA2 = new Point(11.5,ady,adz);
+            moveToWrapper2(pointAA1,quatA);
+            moveToWrapper2(pointAA2,quatA);
+            moveToWrapper2(pointAd,quatA);
+        }
     }
 
     public double[] readARcode() {
