@@ -349,6 +349,32 @@ public class YourService extends KiboRpcService {
         }
         return stu;
     }
+    
+    //A'への経路パターン別
+    //adx,ady,adzがA’の座標pxyz[]
+    private void pathplan(int p, double adx, double ady, double adz, Point pointA,Quaternion quatA) {
+        Point pointAd = new Point(adx,ady,adz);
+        if ((p == 1) || (p == 2) ||(p == 8)) {
+            moveToWrapper2(pointAd,quatA);
+        } else if ((p == 3) || (p == 4)) {
+            //2段階移動(1回目：xyのみ移動，2回目：zのみ移動)
+            Point pointAA = new Point(adx,ady,pointA.getZ());
+            moveToWrapper2(pointAA,quatA);
+            moveToWrapper2(pointAd,quatA);
+        } else if ((p == 5) || (p == 6)) {
+            Point pointAA1 = new Point(10.8,ady,pointA.getZ());
+            Point pointAA2 = new Point(10.8,ady,adz);
+            moveToWrapper2(pointAA1,quatA);
+            moveToWrapper2(pointAA2,quatA);
+            moveToWrapper2(pointAd,quatA);
+        } else {
+            Point pointAA1 = new Point(11.5,ady,pointA.getZ());
+            Point pointAA2 = new Point(11.5,ady,adz);
+            moveToWrapper2(pointAA1,quatA);
+            moveToWrapper2(pointAA2,quatA);
+            moveToWrapper2(pointAd,quatA);
+        }
+    }
 
     //A'への経路パターン別
     //adx,ady,adzがA’の座標pxyz[]
