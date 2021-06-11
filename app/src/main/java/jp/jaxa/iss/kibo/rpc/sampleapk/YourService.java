@@ -143,6 +143,9 @@ public class YourService extends KiboRpcService {
         api.laserControl(false);
         Log.e("Laser", "Bee quit irradiating the laser.");
 
+        //Bへの移動
+        pathplan2(p,aax,aay,aaz,pointA3,quatA3);
+
         // Send mission completion
         api.reportMissionCompletion();
         Log.e("MissionCompletion", "Mission completed.");
@@ -434,4 +437,49 @@ public class YourService extends KiboRpcService {
         return q_target;
     }
 
+    //Bへの経路パターン別1,3,4,5,6
+    //adx,ady,adzがA’の座標pxyz[]
+    private void pathplan2(int p, double adx, double ady, double adz, Point pointA,Quaternion quatA) {
+        Point pointAd = new Point(adx,ady,adz);
+        Point pointB = new Point(10.6,-8.0,4.5);
+        if (p == 1){
+            Point pointAA1 = new Point(adx-0.35,-9.0,adz-0.5);
+            Point pointAA2 = new Point(pointAA1.getX()-0.35,-9.0,pointAA1.getZ()+0.5);
+            moveToWrapper2(pointAA1,quatA);
+            moveToWrapper2(pointAA2,quatA);
+            moveToWrapper2(pointB,quatA);
+        } else if (p == 2){
+            Point pointAA1 = new Point(adx-0.5,ady+0.8,adz);
+            moveToWrapper2(pointAA1,quatA);
+            moveToWrapper2(pointB,quatA);
+        }else if (p == 3){
+            Point pointAA1 = new Point(adx-0.5,ady+0.8,adz-0.08);
+            moveToWrapper2(pointAA1,quatA);
+            moveToWrapper2(pointB,quatA);
+        }else if (p == 4){
+            Point pointAA1 = new Point(adx-0.5,ady+0.8,adz-0.7);
+            moveToWrapper2(pointAA1,quatA);
+            moveToWrapper2(pointB,quatA);
+        }else if (p == 5) {
+            Point pointAA1 = new Point(10.6,-8.8,5.1);
+            moveToWrapper2(pointAA1,quatA);
+            moveToWrapper2(pointB,quatA);
+        } else if (p == 6) {
+            Point pointAA1 = new Point(10.6,-8.8,5.25);
+            moveToWrapper2(pointAA1,quatA);
+            moveToWrapper2(pointB,quatA);
+        } else if (p == 8){
+            Point pointAA1 = new Point(adx-0.35,-9.0,adz-0.6);
+            Point pointAA2 = new Point(pointAA1.getX()-0.35,-9.0,pointAA1.getZ()+0.5);
+            moveToWrapper2(pointAA1,quatA);
+            moveToWrapper2(pointAA2,quatA);
+            moveToWrapper2(pointB,quatA);
+        }else {
+            Point pointAA1 = new Point(11.5,ady,pointA.getZ());
+            Point pointAA2 = new Point(11.5,ady,adz);
+            moveToWrapper2(pointAA1,quatA);
+            moveToWrapper2(pointAA2,quatA);
+            moveToWrapper2(pointAd,quatA);
+        }
+    }
 }
