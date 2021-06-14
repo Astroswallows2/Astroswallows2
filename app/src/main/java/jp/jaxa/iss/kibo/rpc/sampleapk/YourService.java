@@ -468,11 +468,13 @@ public class YourService extends KiboRpcService {
             Point pointAA1 = new Point(10.6,-8.8,5.25);
             moveToWrapper2(pointAA1,quatA);
             moveToWrapper2(pointB,quatA);
-        } else if (p == 8){
-            Point pointAA1 = new Point(adx-0.35,-9.0,adz-0.6);
-            Point pointAA2 = new Point(pointAA1.getX()-0.35,-9.0,pointAA1.getZ()+0.5);
+        } else if (p == 7){
+            Point pointAA1 = new Point(11.5,ady,pointAd.getZ());
+            Point pointAA2 = new Point(pointAA1.getX(),ady,pointA.getZ());
+            Point pointAA3 = new Point(pointAA2.getX()-0.9,pointAA2.getY()+1.0,pointAA2.getZ()-0.5);
             moveToWrapper2(pointAA1,quatA);
             moveToWrapper2(pointAA2,quatA);
+            moveToWrapper2(pointAA3,quatA);
             moveToWrapper2(pointB,quatA);
         }else {
             Point pointAA1 = new Point(11.5,ady,pointA.getZ());
