@@ -21,7 +21,9 @@ package jp.jaxa.iss.kibo.rpc.sampleapk;
         import gov.nasa.arc.astrobee.Result;
         import gov.nasa.arc.astrobee.types.Point;
         import gov.nasa.arc.astrobee.types.Quaternion;
+        import gov.nasa.arc.astrobee.types.Point;
         import jp.jaxa.iss.kibo.rpc.api.KiboRpcService;
+        import jp.jaxa.iss.kibo.rpc.api.types.PointCloud;
 
 /**
  * Class meant to handle commands from the Ground Data System and execute them in Astrobee
@@ -63,21 +65,47 @@ public class YourService extends KiboRpcService {
         Log.e("pattern and pointAA x y z", "pattern:" + p + "[x:" + aax + "y:" + aay + "z:" + aaz + "]");
 
         //A'への移動経路
-        pathplan(p,aax,aay,aaz,pointA3,quatA3);
+        //pathplan(p,aax,aay,aaz,pointA3,quatA3);
 
         //ARからターゲットまでの距離を考えて補正
         double[] stu = adjustment(p, aax, aaz);
-        double axa = stu[0];
+        double axa = stu[0]-1.2;
         double aya = aay - 0.2;
         double aza = stu[1];
+        moveToWrapper(axa, aya, aza, quatA3.getX(), quatA3.getY(), quatA3.getZ(), quatA3.getW());
 
         //read ARcode
+
+        Log.e("sleep 60 sec", "");
+        try {
+            Thread.sleep(60000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         Log.e("start read ARcode", "");
+
+
+        moveToWrapper(axa, aya, aza, quatA3.getX(), quatA3.getY(), quatA3.getZ(), quatA3.getW());
+        /*
+
+        PointCloud point_cloud = api.getPointCloudHazCam();
+        double[][] array = point_cloud2list(point_cloud);
+        for (int i = 0; i < array.length; i++){
+            Log.e("",String.valueOf(array[i][0]) + " " + String.valueOf(array[i][1]) + " " + String.valueOf(array[i][2]));
+        }
+        */
+
+
         //ターゲットの中心座標を４つのARの位置から求める
         double[] target_center = readARcode();
+        double[] target_center2 = readARcode_from_one();
         Log.e("finished reading ARcode", Arrays.toString(target_center));
+        Log.e("finished reading ARcode2", Arrays.toString(target_center2));
         //opencvの座標系からastrobeeの座標系に変換
         target_center = change_origin(target_center);
+        double[] a = {0.1, 0, 0};
+
+        //target_center = M.addVec(target_center, a);
         Log.e("finished changing the origin", Arrays.toString(target_center));
         double[] navcam = {0.1177, -0.0422, -0.0826};
         double[] laser = {0.1302, 0.0572, -0.1111};
@@ -91,8 +119,11 @@ public class YourService extends KiboRpcService {
         Log.e("finished calculating q_target in astrobee's origin", String.valueOf(q_target.getX()) + del + String.valueOf(q_target.getY()) + del + String.valueOf(q_target.getZ()) + del + String.valueOf(q_target.getW()));
         q_target = M.mul(quatA3, q_target);
         //kibo座標系でのクォータニオンの計算終了
-        Log.e("finished calculating q_target　in kibo' origin", String.valueOf(q_target.getX()) + del + String.valueOf(q_target.getY()) + del + String.valueOf(q_target.getZ()) + del + String.valueOf(q_target.getW()));
+        Log.e("finished calculating q_target in kibo' origin", String.valueOf(q_target.getX()) + del + String.valueOf(q_target.getY()) + del + String.valueOf(q_target.getZ()) + del + String.valueOf(q_target.getW()));
+        moveToWrapper(axa, aya, aza, quatA3.getX(), quatA3.getY(), quatA3.getZ(), quatA3.getW());
+        double[] navcam2laser = M.diffVec(laser, navcam);
         relativemoveToWrapper(0,0,0, q_target.getX(), q_target.getY(), q_target.getZ(), q_target.getW());
+
         Log.e("finished rotating", "");
         //Log.e("finish read ARcode", rotationMat.dump());
         //int corners = readARcode2();
@@ -191,7 +222,7 @@ public class YourService extends KiboRpcService {
         final int LOOP_MAX = 3;
         Result result = api.moveTo(point, quat, true);
         int loopCounter = 0;
-        while (!result.hasSucceeded() || loopCounter < LOOP_MAX) {
+        while (!result.hasSucceeded() && loopCounter < LOOP_MAX) {
             Log.e("Moveto", "Bee start moving to x:" + point.getX()
                     + " y:" + point.getY() + " z:" + point.getZ());
             Log.e("Loop Counter", "loop counter is" + loopCounter);
@@ -390,6 +421,23 @@ public class YourService extends KiboRpcService {
         return target_center;
     }
 
+    public double[] readARcode_from_one() {
+        Mat cameraMatrix = AR.makeCamMat();
+        Mat distortionCoefficients = AR.makeDistCoef();
+        Mat mat3 = api.getMatNavCam();
+        double[] target_center = AR.detectTarget_from_one(mat3, cameraMatrix, distortionCoefficients);
+        return target_center;
+    }
+
+    public double[] readARcode_from_one2() {
+        Mat cameraMatrix = AR.makeCamMat();
+        Mat distortionCoefficients = AR.makeDistCoef();
+        Mat mat3 = api.getMatNavCam();
+        double[] target_center = AR.detectTarget_from_one2(mat3, cameraMatrix, distortionCoefficients);
+        return target_center;
+    }
+
+
     public String readARcode3() {
         Mat cameraMatrix = AR.makeCamMat();
         Mat distortionCoefficients = AR.makeDistCoef();
@@ -426,11 +474,28 @@ public class YourService extends KiboRpcService {
  */
     }
 
+    public double[][] point_cloud2list(PointCloud point_cloud){
+        Point[] PointArray = point_cloud.getPointArray();
+        int width = point_cloud.getWidth();
+        Log.e("pointcloud width", String.valueOf(width));
+        int height = point_cloud.getHeight();
+        Log.e("pointcloud height", String.valueOf(height));
+        int length = width * height;
+        double[][] array = new double[length][3];
+        for(int i = 0; i < length; i++) {
+            array[i][0] = PointArray[i].getX();
+            array[i][1] = PointArray[i].getY();
+            array[i][2] = PointArray[i].getZ();
+        }
+        return array;
+    }
+
     public Quaternion rotatetotarget(double[] target_center, double[] navcam, double[] laser, double[] beam) {
         //ビームの長さk
+        //opencv座標の原点はカメラの位置なのか？
         target_center = M.addVec(target_center, navcam);
         double k =  Math.sqrt(Math.pow(target_center[0],2) + Math.pow(target_center[1],2) + Math.pow(target_center[2],2)
-                - Math.pow(laser[1], 2) - Math.pow(laser[2], 2) - laser[0]);
+                - Math.pow(laser[1], 2) - Math.pow(laser[2], 2)) - laser[0];
         Log.e("k", String.valueOf(k));
         //回転前のビームの先端．ターゲット中心ベクトルと大きさ同じ
         double[] target_center_beam = M.addVec(laser, M.scalMul(beam, k));
