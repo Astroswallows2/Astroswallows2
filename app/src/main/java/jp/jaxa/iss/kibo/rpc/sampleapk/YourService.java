@@ -445,6 +445,15 @@ public class YourService extends KiboRpcService {
     private void pathplan2(int p, double adx, double ady, double adz, Point pointA,Quaternion quatA) {
         Point pointAd = new Point(adx,ady,adz);
         Point pointB = new Point(10.6,-8.0,4.5);
+<<<<<<< HEAD
+        if ((p == 1)||(p == 8)){
+            Point pointAA1 = new Point(adx-0.35,-9.0,adz-0.5);
+            Point pointAA2 = new Point(pointAA1.getX()-0.35,-9.0,pointAA1.getZ()-0.1);
+            moveToWrapper2(pointAA1,quatA);
+            moveToWrapper2(pointAA2,quatA);
+            moveToWrapper2(pointB,quatA);
+        }else if (p == 2){
+=======
         if (p == 1){
             Point pointAA1 = new Point(adx-0.35,-9.0,adz-0.5);
             Point pointAA2 = new Point(pointAA1.getX()-0.35,-9.0,pointAA1.getZ()+0.5);
@@ -452,6 +461,7 @@ public class YourService extends KiboRpcService {
             moveToWrapper2(pointAA2,quatA);
             moveToWrapper2(pointB,quatA);
         } else if (p == 2){
+>>>>>>> 1a0f78400d866479960b330389d9f9aca6ece53c
             Point pointAA1 = new Point(adx-0.5,ady+0.8,adz);
             moveToWrapper2(pointAA1,quatA);
             moveToWrapper2(pointB,quatA);
@@ -467,6 +477,21 @@ public class YourService extends KiboRpcService {
             Point pointAA1 = new Point(10.6,-8.8,5.1);
             moveToWrapper2(pointAA1,quatA);
             moveToWrapper2(pointB,quatA);
+<<<<<<< HEAD
+        }else if (p == 6) {
+            Point pointAA1 = new Point(10.6,-8.8,5.25);
+            moveToWrapper2(pointAA1,quatA);
+            moveToWrapper2(pointB,quatA);
+        }else{
+            Point pointAA1 = new Point(11.5,ady,adz);
+            Point pointAA2 = new Point(pointAA1.getX(),ady,pointA.getZ());
+            //Point pointAA3 = new Point(pointAA2.getX()-0.9,pointAA2.getY()+0.8,4.73);
+            Point pointAA3 = new Point(10.6,-8.8,4.73);
+            moveToWrapper2(pointAA1,quatA);
+            moveToWrapper2(pointAA2,quatA);
+            moveToWrapper2(pointAA3,quatA);
+            moveToWrapper2(pointB,quatA);
+=======
         } else if (p == 6) {
             Point pointAA1 = new Point(10.6,-8.8,5.25);
             moveToWrapper2(pointAA1,quatA);
@@ -483,6 +508,7 @@ public class YourService extends KiboRpcService {
             moveToWrapper2(pointAA1,quatA);
             moveToWrapper2(pointAA2,quatA);
             moveToWrapper2(pointAd,quatA);
+>>>>>>> 1a0f78400d866479960b330389d9f9aca6ece53c
         }
     }
 }
