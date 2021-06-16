@@ -69,7 +69,7 @@ public class YourService extends KiboRpcService {
 
         //ARからターゲットまでの距離を考えて補正
         double[] stu = adjustment(p, aax, aaz);
-        double axa = stu[0]-1.2;
+        double axa = stu[0];
         double aya = aay - 0.2;
         double aza = stu[1];
         moveToWrapper(axa, aya, aza, quatA3.getX(), quatA3.getY(), quatA3.getZ(), quatA3.getW());
