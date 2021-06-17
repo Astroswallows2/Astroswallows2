@@ -46,6 +46,18 @@ public class AR{
         DetectorParameters parameters = DetectorParameters.create();
         Aruco.detectMarkers(inputImage, dictionary, corners, markerIds, parameters);
 
+        Log.e("markers Ids", markerIds.dump());
+
+        String corner1 = corners.get(0).dump();
+        String corner2 = corners.get(1).dump();
+        String corner3 = corners.get(2).dump();
+        String corner4 = corners.get(3).dump();
+
+        Log.e("corner0 position", corner1);
+        Log.e("corner1 position", corner2);
+        Log.e("corner2 position", corner3);
+        Log.e("corner3 position", corner4);
+
         Mat rotationMatrix = new Mat(), translationVectors = new Mat();
         Aruco.estimatePoseSingleMarkers(corners, 0.05f, cameraMatrix, distortionCoefficients, rotationMatrix, translationVectors);
 
@@ -59,10 +71,81 @@ public class AR{
         double AR2[] = translationVectors.get(1,0);
         double AR3[] = translationVectors.get(2,0);
         double AR4[] = translationVectors.get(3,0);
+
+        Log.e("AR1 position", String.valueOf(AR1[0]));
+        Log.e("AR2 position", String.valueOf(AR2[0]));
+        Log.e("AR3 position", String.valueOf(AR3[0]));
+        Log.e("AR4 position", String.valueOf(AR4[0]));
+
         double[] target_center = M.scalDiv(M.addVec(AR1, M.addVec(AR2, M.addVec(AR3, AR4))), 4);
+        Quaternion rotx3 = new Quaternion((float) Math.sin(Math.toRadians(3/2)),0,0,(float) Math.cos(Math.toRadians(3/2)));
+        //target_center = M.rotateVec(target_center, rotx3);
         return target_center;
     }
 
+    public static double[] detectTarget_from_one(Mat inputImage, Mat cameraMatrix, Mat distortionCoefficients){
+        Dictionary dictionary = Aruco.getPredefinedDictionary(Aruco.DICT_5X5_250);
+        List<Mat> corners = new ArrayList<>();
+        Mat markerIds = new Mat();
+        DetectorParameters parameters = DetectorParameters.create();
+        Aruco.detectMarkers(inputImage, dictionary, corners, markerIds, parameters);
+        Mat rotationVectors = new Mat(), translationVectors = new Mat();
+        Aruco.estimatePoseSingleMarkers(corners, 0.05f, cameraMatrix, distortionCoefficients, rotationVectors, translationVectors);
+        Log.e("corners", String.valueOf(corners.size()));
+        Log.e("marker Ids", markerIds.dump());
+        double[] AR_translationVectors = translationVectors.get(0,0);
+        double[] AR_rotationVectors = rotationVectors.get(0,0);
+        double AR_Id = markerIds.get(0, 0)[0];
+        String del = ":";
+        Log.e("Id and translation vector and rotation vector", String.valueOf(AR_Id) + del + String.valueOf(AR_translationVectors[0]) + del + String.valueOf(AR_rotationVectors[0]));
+        double[] target_center = new double[3];
+        if (AR_Id == 1){
+            double[] AR12target_center = {-0.1125, 0.0415, 0};
+            target_center = M.addVec(AR_translationVectors, AR12target_center);
+        } else if(AR_Id == 2){
+            double[] AR12target_center = {0.1125, 0.0415, 0};
+            target_center = M.addVec(AR_translationVectors, AR12target_center);
+        } else if(AR_Id == 3){
+            double[] AR12target_center = {0.1125, -0.0415, 0};
+            target_center = M.addVec(AR_translationVectors, AR12target_center);
+        } else if(AR_Id == 4){
+            double[] AR12target_center = {-0.1125, -0.0415, 0};
+            target_center = M.addVec(AR_translationVectors, AR12target_center);
+        }
+        return target_center;
+    }
+
+    public static double[] detectTarget_from_one2(Mat inputImage, Mat cameraMatrix, Mat distortionCoefficients){
+        Dictionary dictionary = Aruco.getPredefinedDictionary(Aruco.DICT_5X5_250);
+        List<Mat> corners = new ArrayList<>();
+        Mat markerIds = new Mat();
+        DetectorParameters parameters = DetectorParameters.create();
+        Aruco.detectMarkers(inputImage, dictionary, corners, markerIds, parameters);
+        Mat rotationVectors = new Mat(), translationVectors = new Mat();
+        Aruco.estimatePoseSingleMarkers(corners, 0.05f, cameraMatrix, distortionCoefficients, rotationVectors, translationVectors);
+        Log.e("corners", String.valueOf(corners.size()));
+        Log.e("marker Ids", markerIds.dump());
+        double[] AR_translationVectors = translationVectors.get(0,0);
+        double[] AR_rotationVectors = rotationVectors.get(0,0);
+        double AR_Id = markerIds.get(0, 0)[0];
+        String del = ":";
+        Log.e("Id and translation vector and rotation vector", String.valueOf(AR_Id) + del + String.valueOf(AR_translationVectors[0]) + del + String.valueOf(AR_rotationVectors[0]));
+        double[] target_center = new double[3];
+        if (AR_Id == 1){
+            double[] AR12target_center = {0, -0.1125, 0.0415};
+            target_center = M.addVec(AR_translationVectors, AR12target_center);
+        } else if(AR_Id == 2){
+            double[] AR12target_center = {0, 0.1125, 0.0415};
+            target_center = M.addVec(AR_translationVectors, AR12target_center);
+        } else if(AR_Id == 3){
+            double[] AR12target_center = {0, 0.1125, -0.0415};
+            target_center = M.addVec(AR_translationVectors, AR12target_center);
+        } else if(AR_Id == 4){
+            double[] AR12target_center = {0, -0.1125, -0.0415};
+            target_center = M.addVec(AR_translationVectors, AR12target_center);
+        }
+        return target_center;
+    }
 
     public static String detectTarget2(Mat inputImage, Mat cameraMatrix, Mat distortionCoefficients) {
         Dictionary dictionary = Aruco.getPredefinedDictionary(Aruco.DICT_5X5_250);
