@@ -168,11 +168,13 @@ public class YourService extends KiboRpcService {
 
         double[] navcam2laser = M.diffVec(laser, navcam);
         //relativemoveToWrapper(0,0,0, q_target.getX(), q_target.getY(), q_target.getZ(), q_target.getW());
+
         long t_12 = System.currentTimeMillis()/1000;
         Log.e("Time:calculate q_target", String.valueOf(t_12 - t_11));
         moveToWrapper(aax,aay,aaz, q_target.getX(), q_target.getY(), q_target.getZ(), q_target.getW());
         Log.e("finished rotating", "");
         long t_13 = System.currentTimeMillis()/1000;
+
         Log.e("Time:rotate q_target", String.valueOf(t_13 - t_12));
         //Log.e("finish read ARcode", rotationMat.dump());
         //int corners = readARcode2();
@@ -223,6 +225,7 @@ public class YourService extends KiboRpcService {
         Log.e("Snapshot", "Bee start taking a snapshot .");
         api.takeSnapshot();
         Log.e("Snapshot", "Bee finished taking a snapshot .");
+
         long t_15 = System.currentTimeMillis()/1000;
         Log.e("Time:Snap shot", String.valueOf(t_15 - t_14));
 
