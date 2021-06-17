@@ -33,6 +33,7 @@ public class YourService extends KiboRpcService {
     @Override
     protected void runPlan1() {
         // astrobee is undocked and the mission starts
+        long t_0 = System.currentTimeMillis();
         api.startMission();
         Mat cameraMatrix =AR.makeCamMat();
         Mat distortionCoefficients = AR.makeDistCoef();
@@ -42,12 +43,19 @@ public class YourService extends KiboRpcService {
         Quaternion quatA2 = new Quaternion(0,0,-0.707f,0.707f);
         Point pointA3 = new Point(11.35,-10,4.95);
         Quaternion quatA3 = new Quaternion(0,0,-0.707f,0.707f);
-
+        long t_1 = System.currentTimeMillis();
+        Log.e("Time:start mission", String.valueOf(t_1 - t_0));
         moveToWrapper2(pointA1,quatA1);
+        long t_2 = System.currentTimeMillis();
+        Log.e("Time:move1", String.valueOf(t_2 - t_1));
 
         //pointAに二段階で移動
         moveToWrapper2(pointA2,quatA2);
+        long t_3 = System.currentTimeMillis();
+        Log.e("Time:move2", String.valueOf(t_3 - t_2));
         moveToWrapper2(pointA3,quatA3);
+        long t_4 = System.currentTimeMillis();
+        Log.e("Time:move3", String.valueOf(t_4 - t_3));
 
         Log.e("bmp1_1", "Start ZXing QR reading");
         String valueX = readQRcodeWrapper();
@@ -63,6 +71,8 @@ public class YourService extends KiboRpcService {
         double aay = pxyz[2];
         double aaz = pxyz[3];
         Log.e("pattern and pointAA x y z", "pattern:" + p + "[x:" + aax + "y:" + aay + "z:" + aaz + "]");
+        long t_5 = System.currentTimeMillis();
+        Log.e("Time:read QR and calculate A'", String.valueOf(t_5 - t_4));
         //回転クォータニオン
         //Quaternion rotate2AR = new Quaternion(0,(float) - Math.sin(Math.toRadians(30/2)),0, (float) Math.cos(Math.toRadians(30/2)));
         //Quaternion quatA4 = M.mul(quatA3, rotate2AR);
@@ -71,6 +81,8 @@ public class YourService extends KiboRpcService {
 
         //A'への移動経路
         pathplan(p,aax,aay,aaz,pointA3,quatA3);
+        long t_6 = System.currentTimeMillis();
+        Log.e("Time:pathplan", String.valueOf(t_6 - t_5));
 /*
         //ARからターゲットまでの距離を考えて補正
         double[] stu = adjustment(p, aax, aaz);
@@ -84,15 +96,19 @@ public class YourService extends KiboRpcService {
 
         Log.e("sleep 60 sec", "");
         try {
-            Thread.sleep(60000);
+            Thread.sleep(5000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
         Log.e("start read ARcode", "");
         //relativemoveToWrapper(0,0,0,0,0,-0.707f,0.707f);
+        long t_7 = System.currentTimeMillis();
+        Log.e("Time:sleep", String.valueOf(t_7 - t_6));
 
 
         moveToWrapper(aax, aay, aaz, quatA3.getX(), quatA3.getY(), quatA3.getZ(), quatA3.getW());
+        long t_8 = System.currentTimeMillis();
+        Log.e("Time:stay A'", String.valueOf(t_8 - t_7));
         //pathplan(p,aax,aay,aaz,pointA3,quatA3);
         //moveToWrapper2(pointA3,quatA4);
         //relativemoveToWrapper(0,0,0, quatA3.getX(), quatA3.getY(), quatA3.getZ(), quatA3.getW());
@@ -110,15 +126,23 @@ public class YourService extends KiboRpcService {
         Log.e("Hazcam",String.valueOf(array[i][0]) + " " + String.valueOf(array[i][1]) + " " + String.valueOf(array[i][2]));
         double distance = - array[i][2] + aay - 0.1328;
         Log.e("Target plane is located in", String.valueOf(distance));
+        long t_9 = System.currentTimeMillis();
+        Log.e("Time:HazCam", String.valueOf(t_9 - t_8));
         moveToWrapper(aax, aay, aaz, quatA3.getX(), quatA3.getY(), quatA3.getZ(), quatA3.getW());
+        long t_10 = System.currentTimeMillis();
+        Log.e("Time:stay", String.valueOf(t_10 - t_9));
 
 
 
         //ターゲットの中心座標を４つのARの位置から求める
         double[] target_center = readARcode();
-        double[] target_center2 = readARcode_from_one();
+        //double[] target_center2 = readARcode_from_one();
         Log.e("finished reading ARcode", Arrays.toString(target_center));
-        Log.e("finished reading ARcode2", Arrays.toString(target_center2));
+        long t_11 = System.currentTimeMillis();
+        Log.e("Time:read AR", String.valueOf(t_11 - t_10));
+        //ターゲットの中心座標を１つのARの位置から求める
+        //Log.e("finished reading ARcode2", Arrays.toString(target_center2));
+
         //opencvの座標系からastrobeeの座標系に変換
         target_center = change_origin(target_center);
         //double[] a = {0.15, 0, 0};
@@ -144,9 +168,12 @@ public class YourService extends KiboRpcService {
 
         double[] navcam2laser = M.diffVec(laser, navcam);
         //relativemoveToWrapper(0,0,0, q_target.getX(), q_target.getY(), q_target.getZ(), q_target.getW());
+        long t_12 = System.currentTimeMillis();
+        Log.e("Time:calculate q_target", String.valueOf(t_12 - t_11));
         moveToWrapper(aax,aay,aaz, q_target.getX(), q_target.getY(), q_target.getZ(), q_target.getW());
-
         Log.e("finished rotating", "");
+        long t_13 = System.currentTimeMillis();
+        Log.e("Time:rotate q_target", String.valueOf(t_13 - t_12));
         //Log.e("finish read ARcode", rotationMat.dump());
         //int corners = readARcode2();
         //Log.e("corners", String.valueOf(corners));
@@ -189,22 +216,32 @@ public class YourService extends KiboRpcService {
         */
         Log.e("Laser", "Bee start irradiating the laser.");
         api.laserControl(true);
+        long t_14 = System.currentTimeMillis();
+        Log.e("start irradiating the laser", String.valueOf(t_14 - t_13));
 
         // Take a snapshot
         Log.e("Snapshot", "Bee start taking a snapshot .");
         api.takeSnapshot();
         Log.e("Snapshot", "Bee finished taking a snapshot .");
+        long t_15 = System.currentTimeMillis();
+        Log.e("Snap shot", String.valueOf(t_15 - t_14));
 
         // turn off the laser
         api.laserControl(false);
         Log.e("Laser", "Bee quit irradiating the laser.");
+        long t_16 = System.currentTimeMillis();
+        Log.e("finish irradiating the laser", String.valueOf(t_16 - t_15));
 
         //Bへの移動
         pathplan2(p,aax,aay,aaz,pointA3,quatA3);
+        long t_17 = System.currentTimeMillis();
+        Log.e("pathplan2", String.valueOf(t_17 - t_16));
 
         // Send mission completion
         api.reportMissionCompletion();
         Log.e("MissionCompletion", "Mission completed.");
+        long t_18 = System.currentTimeMillis();
+        Log.e("Mission completed", String.valueOf(t_18 - t_17));
     }
 
     @Override
@@ -532,13 +569,13 @@ public class YourService extends KiboRpcService {
     private void pathplan2(int p, double adx, double ady, double adz, Point pointA,Quaternion quatA) {
         Point pointAd = new Point(adx,ady,adz);
         Point pointB = new Point(10.6,-8.0,4.5);
-        if (p == 1){
+        if ((p == 1)||(p == 8)){
             Point pointAA1 = new Point(adx-0.35,-9.0,adz-0.5);
-            Point pointAA2 = new Point(pointAA1.getX()-0.35,-9.0,pointAA1.getZ()+0.5);
+            Point pointAA2 = new Point(pointAA1.getX()-0.35,-9.0,pointAA1.getZ()-0.1);
             moveToWrapper2(pointAA1,quatA);
             moveToWrapper2(pointAA2,quatA);
             moveToWrapper2(pointB,quatA);
-        } else if (p == 2){
+        }else if (p == 2){
             Point pointAA1 = new Point(adx-0.5,ady+0.8,adz);
             moveToWrapper2(pointAA1,quatA);
             moveToWrapper2(pointB,quatA);
@@ -554,22 +591,19 @@ public class YourService extends KiboRpcService {
             Point pointAA1 = new Point(10.6,-8.8,5.1);
             moveToWrapper2(pointAA1,quatA);
             moveToWrapper2(pointB,quatA);
-        } else if (p == 6) {
+        }else if (p == 6) {
             Point pointAA1 = new Point(10.6,-8.8,5.25);
             moveToWrapper2(pointAA1,quatA);
             moveToWrapper2(pointB,quatA);
-        } else if (p == 8){
-            Point pointAA1 = new Point(adx-0.35,-9.0,adz-0.6);
-            Point pointAA2 = new Point(pointAA1.getX()-0.35,-9.0,pointAA1.getZ()+0.5);
+        }else{
+            Point pointAA1 = new Point(11.5,ady,adz);
+            Point pointAA2 = new Point(pointAA1.getX(),ady,pointA.getZ());
+            //Point pointAA3 = new Point(pointAA2.getX()-0.9,pointAA2.getY()+0.8,4.73);
+            Point pointAA3 = new Point(10.6,-8.8,4.73);
             moveToWrapper2(pointAA1,quatA);
             moveToWrapper2(pointAA2,quatA);
+            moveToWrapper2(pointAA3,quatA);
             moveToWrapper2(pointB,quatA);
-        }else {
-            Point pointAA1 = new Point(11.5,ady,pointA.getZ());
-            Point pointAA2 = new Point(11.5,ady,adz);
-            moveToWrapper2(pointAA1,quatA);
-            moveToWrapper2(pointAA2,quatA);
-            moveToWrapper2(pointAd,quatA);
         }
     }
 }
