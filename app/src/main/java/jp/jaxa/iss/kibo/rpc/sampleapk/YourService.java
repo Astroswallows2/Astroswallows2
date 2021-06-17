@@ -64,19 +64,20 @@ public class YourService extends KiboRpcService {
         double aaz = pxyz[3];
         Log.e("pattern and pointAA x y z", "pattern:" + p + "[x:" + aax + "y:" + aay + "z:" + aaz + "]");
         //回転クォータニオン
-        Quaternion rotate2AR = new Quaternion(0,(float) - Math.sin(Math.toRadians(30/2)),0, (float) Math.cos(Math.toRadians(30/2)));
-        Quaternion quatA4 = M.mul(quatA3, rotate2AR);
+        //Quaternion rotate2AR = new Quaternion(0,(float) - Math.sin(Math.toRadians(30/2)),0, (float) Math.cos(Math.toRadians(30/2)));
+        //Quaternion quatA4 = M.mul(quatA3, rotate2AR);
         //moveToWrapper2(pointA3,quatA4);
 
 
         //A'への移動経路
         pathplan(p,aax,aay,aaz,pointA3,quatA3);
-
+/*
         //ARからターゲットまでの距離を考えて補正
         double[] stu = adjustment(p, aax, aaz);
         double axa = stu[0];
         double aya = aay - 0.2;
         double aza = stu[1];
+        */
         //moveToWrapper(axa, aya, aza, quatA3.getX(), quatA3.getY(), quatA3.getZ(), quatA3.getW());
 
         //read ARcode
@@ -91,10 +92,10 @@ public class YourService extends KiboRpcService {
         //relativemoveToWrapper(0,0,0,0,0,-0.707f,0.707f);
 
 
-        //moveToWrapper(axa, aya, aza, quatA3.getX(), quatA3.getY(), quatA3.getZ(), quatA3.getW());
+        moveToWrapper(aax, aay, aaz, quatA3.getX(), quatA3.getY(), quatA3.getZ(), quatA3.getW());
         //pathplan(p,aax,aay,aaz,pointA3,quatA3);
         //moveToWrapper2(pointA3,quatA4);
-        relativemoveToWrapper(0,0,0, quatA3.getX(), quatA3.getY(), quatA3.getZ(), quatA3.getW());
+        //relativemoveToWrapper(0,0,0, quatA3.getX(), quatA3.getY(), quatA3.getZ(), quatA3.getW());
 
 
         PointCloud point_cloud = api.getPointCloudHazCam();
@@ -107,8 +108,9 @@ public class YourService extends KiboRpcService {
 
         int i = 104;
         Log.e("Hazcam",String.valueOf(array[i][0]) + " " + String.valueOf(array[i][1]) + " " + String.valueOf(array[i][2]));
-        double distance = - array[i][2] + aya - 0.1328;
+        double distance = - array[i][2] + aay - 0.1328;
         Log.e("Target plane is located in", String.valueOf(distance));
+        moveToWrapper(aax, aay, aaz, quatA3.getX(), quatA3.getY(), quatA3.getZ(), quatA3.getW());
 
 
 
@@ -141,8 +143,8 @@ public class YourService extends KiboRpcService {
         //moveToWrapper2(pointA3,quatA4);
 
         double[] navcam2laser = M.diffVec(laser, navcam);
-        relativemoveToWrapper(0,0,0, q_target.getX(), q_target.getY(), q_target.getZ(), q_target.getW());
-        //relativemoveToWrapper(axa,aya,aza, q_target.getX(), q_target.getY(), q_target.getZ(), q_target.getW());
+        //relativemoveToWrapper(0,0,0, q_target.getX(), q_target.getY(), q_target.getZ(), q_target.getW());
+        moveToWrapper(aax,aay,aaz, q_target.getX(), q_target.getY(), q_target.getZ(), q_target.getW());
 
         Log.e("finished rotating", "");
         //Log.e("finish read ARcode", rotationMat.dump());
