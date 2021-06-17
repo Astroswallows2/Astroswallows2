@@ -63,16 +63,21 @@ public class YourService extends KiboRpcService {
         double aay = pxyz[2];
         double aaz = pxyz[3];
         Log.e("pattern and pointAA x y z", "pattern:" + p + "[x:" + aax + "y:" + aay + "z:" + aaz + "]");
+        //回転クォータニオン
+        Quaternion rotate2AR = new Quaternion(0,(float) - Math.sin(Math.toRadians(30/2)),0, (float) Math.cos(Math.toRadians(30/2)));
+        Quaternion quatA4 = M.mul(quatA3, rotate2AR);
+        //moveToWrapper2(pointA3,quatA4);
+
 
         //A'への移動経路
-        //pathplan(p,aax,aay,aaz,pointA3,quatA3);
+        pathplan(p,aax,aay,aaz,pointA3,quatA3);
 
         //ARからターゲットまでの距離を考えて補正
         double[] stu = adjustment(p, aax, aaz);
         double axa = stu[0];
         double aya = aay - 0.2;
         double aza = stu[1];
-        moveToWrapper(axa, aya, aza, quatA3.getX(), quatA3.getY(), quatA3.getZ(), quatA3.getW());
+        //moveToWrapper(axa, aya, aza, quatA3.getX(), quatA3.getY(), quatA3.getZ(), quatA3.getW());
 
         //read ARcode
 
@@ -83,17 +88,28 @@ public class YourService extends KiboRpcService {
             e.printStackTrace();
         }
         Log.e("start read ARcode", "");
+        //relativemoveToWrapper(0,0,0,0,0,-0.707f,0.707f);
 
 
-        moveToWrapper(axa, aya, aza, quatA3.getX(), quatA3.getY(), quatA3.getZ(), quatA3.getW());
-        /*
+        //moveToWrapper(axa, aya, aza, quatA3.getX(), quatA3.getY(), quatA3.getZ(), quatA3.getW());
+        //pathplan(p,aax,aay,aaz,pointA3,quatA3);
+        //moveToWrapper2(pointA3,quatA4);
+        relativemoveToWrapper(0,0,0, quatA3.getX(), quatA3.getY(), quatA3.getZ(), quatA3.getW());
+
 
         PointCloud point_cloud = api.getPointCloudHazCam();
         double[][] array = point_cloud2list(point_cloud);
+/*
         for (int i = 0; i < array.length; i++){
             Log.e("",String.valueOf(array[i][0]) + " " + String.valueOf(array[i][1]) + " " + String.valueOf(array[i][2]));
         }
-        */
+*/
+
+        int i = 104;
+        Log.e("Hazcam",String.valueOf(array[i][0]) + " " + String.valueOf(array[i][1]) + " " + String.valueOf(array[i][2]));
+        double distance = - array[i][2] + aya - 0.1328;
+        Log.e("Target plane is located in", String.valueOf(distance));
+
 
 
         //ターゲットの中心座標を４つのARの位置から求める
@@ -103,9 +119,10 @@ public class YourService extends KiboRpcService {
         Log.e("finished reading ARcode2", Arrays.toString(target_center2));
         //opencvの座標系からastrobeeの座標系に変換
         target_center = change_origin(target_center);
-        double[] a = {0.1, 0, 0};
+        //double[] a = {0.15, 0, 0};
 
         //target_center = M.addVec(target_center, a);
+        target_center[0] = array[i][2] + 0.1328;
         Log.e("finished changing the origin", Arrays.toString(target_center));
         double[] navcam = {0.1177, -0.0422, -0.0826};
         double[] laser = {0.1302, 0.0572, -0.1111};
@@ -120,9 +137,12 @@ public class YourService extends KiboRpcService {
         q_target = M.mul(quatA3, q_target);
         //kibo座標系でのクォータニオンの計算終了
         Log.e("finished calculating q_target in kibo' origin", String.valueOf(q_target.getX()) + del + String.valueOf(q_target.getY()) + del + String.valueOf(q_target.getZ()) + del + String.valueOf(q_target.getW()));
-        moveToWrapper(axa, aya, aza, quatA3.getX(), quatA3.getY(), quatA3.getZ(), quatA3.getW());
+        //moveToWrapper(axa, aya, aza, quatA3.getX(), quatA3.getY(), quatA3.getZ(), quatA3.getW());
+        //moveToWrapper2(pointA3,quatA4);
+
         double[] navcam2laser = M.diffVec(laser, navcam);
         relativemoveToWrapper(0,0,0, q_target.getX(), q_target.getY(), q_target.getZ(), q_target.getW());
+        //relativemoveToWrapper(axa,aya,aza, q_target.getX(), q_target.getY(), q_target.getZ(), q_target.getW());
 
         Log.e("finished rotating", "");
         //Log.e("finish read ARcode", rotationMat.dump());
