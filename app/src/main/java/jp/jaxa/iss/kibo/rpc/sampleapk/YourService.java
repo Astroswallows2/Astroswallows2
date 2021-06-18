@@ -112,7 +112,7 @@ public class YourService extends KiboRpcService {
         if(p==7){
             moveToWrapper(11.5, aay, aaz, quatA3.getX(), quatA3.getY(), quatA3.getZ(), quatA3.getW());
         }else if(p==6){
-            moveToWrapper(11.6, aay, aaz, quatA3.getX(), quatA3.getY(), quatA3.getZ(), quatA3.getW());
+            moveToWrapper(11.54, aay, aaz, quatA3.getX(), quatA3.getY(), quatA3.getZ(), quatA3.getW());
         }else {
             moveToWrapper(aax, aay, aaz, quatA3.getX(), quatA3.getY(), quatA3.getZ(), quatA3.getW());
         }
@@ -183,7 +183,7 @@ public class YourService extends KiboRpcService {
         if(p==7){
             moveToWrapper(11.5, aay, aaz, q_target.getX(), q_target.getY(), q_target.getZ(), q_target.getW());
         }else if(p==6){
-            moveToWrapper(11.6, aay, aaz, q_target.getX(), q_target.getY(), q_target.getZ(), q_target.getW());
+            moveToWrapper(11.54, aay, aaz, q_target.getX(), q_target.getY(), q_target.getZ(), q_target.getW());
         }else {
             moveToWrapper(aax, aay, aaz, q_target.getX(), q_target.getY(), q_target.getZ(), q_target.getW());
         }
@@ -493,9 +493,9 @@ public class YourService extends KiboRpcService {
             moveToWrapper2(pointAd,quatA);
             Log.e("finished moving 3", "");
         } else if (p == 6) {
-            Point pointAA1 = new Point(11.6,ady,pointA.getZ());
+            Point pointAA1 = new Point(11.54,ady,pointA.getZ());
             //Point pointAA2 = new Point(10.8,ady,adz);
-            Point pointAA2 = new Point(11.6,ady,adz);
+            Point pointAA2 = new Point(11.54,ady,adz);
             moveToWrapper2(pointAA1,quatA);
             Log.e("finished moving 1", "");
             moveToWrapper2(pointAA2,quatA);
