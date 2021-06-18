@@ -115,7 +115,7 @@ public class YourService extends KiboRpcService {
 
 
 
-        PointCloud point_cloud = api.getPointCloudHazCam();
+        //PointCloud point_cloud = api.getPointCloudHazCam();
         //double[][] array = point_cloud2list(point_cloud);
 /*
         for (int i = 0; i < array.length; i++){
