@@ -114,19 +114,21 @@ public class YourService extends KiboRpcService {
         //relativemoveToWrapper(0,0,0, quatA3.getX(), quatA3.getY(), quatA3.getZ(), quatA3.getW());
 
 
+
         PointCloud point_cloud = api.getPointCloudHazCam();
-        double[][] array = point_cloud2list(point_cloud);
+        //double[][] array = point_cloud2list(point_cloud);
 /*
         for (int i = 0; i < array.length; i++){
             Log.e("",String.valueOf(array[i][0]) + " " + String.valueOf(array[i][1]) + " " + String.valueOf(array[i][2]));
         }
 */
 
-        int i = 104;
-        Log.e("Hazcam",String.valueOf(array[i][0]) + " " + String.valueOf(array[i][1]) + " " + String.valueOf(array[i][2]));
-        double distance = - array[i][2] + aay - 0.1328;
-        Log.e("Target plane is located in", String.valueOf(distance));
+        //int i = 104;
+        //Log.e("Hazcam",String.valueOf(array[i][0]) + " " + String.valueOf(array[i][1]) + " " + String.valueOf(array[i][2]));
+        //double distance = - array[i][2] + aay - 0.1328;
+        //Log.e("Target plane is located in", String.valueOf(distance));
         long t_9 = System.currentTimeMillis()/1000;
+
         Log.e("Time:HazCam", String.valueOf(t_9 - t_8));
         moveToWrapper(aax, aay, aaz, quatA3.getX(), quatA3.getY(), quatA3.getZ(), quatA3.getW());
         long t_10 = System.currentTimeMillis()/1000;
@@ -148,7 +150,8 @@ public class YourService extends KiboRpcService {
         //double[] a = {0.15, 0, 0};
 
         //target_center = M.addVec(target_center, a);
-        target_center[0] = array[i][2] + 0.1328;
+        //target_center[0] = array[i][2] + 0.1328;
+        target_center[0] = 10.5843 + aay;
         Log.e("finished changing the origin", Arrays.toString(target_center));
         double[] navcam = {0.1177, -0.0422, -0.0826};
         double[] laser = {0.1302, 0.0572, -0.1111};
@@ -223,6 +226,7 @@ public class YourService extends KiboRpcService {
 
         // Take a snapshot
         Log.e("Snapshot", "Bee start taking a snapshot .");
+        moveToWrapper(aax,aay,aaz, q_target.getX(), q_target.getY(), q_target.getZ(), q_target.getW());
         api.takeSnapshot();
         Log.e("Snapshot", "Bee finished taking a snapshot .");
 
