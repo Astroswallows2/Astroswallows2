@@ -41,7 +41,8 @@ public class YourService extends KiboRpcService {
         Quaternion quatA1 = new Quaternion(0,0,0,1);
         Point pointA2 = new Point(11.35,-10,4.5);
         Quaternion quatA2 = new Quaternion(0,0,-0.707f,0.707f);
-        Point pointA3 = new Point(11.35,-10,4.95);
+        //Point pointA3 = new Point(11.35,-10,4.95);
+        Point pointA3 = new Point(11.5,-10,4.95);
         Quaternion quatA3 = new Quaternion(0,0,-0.707f,0.707f);
         long t_1 = System.currentTimeMillis()/1000;
         Log.e("Time:start mission", String.valueOf(t_1 - t_0));
@@ -50,12 +51,13 @@ public class YourService extends KiboRpcService {
         Log.e("Time:move1", String.valueOf(t_2 - t_1));
 
         //pointAに二段階で移動
-        moveToWrapper2(pointA2,quatA2);
-        long t_3 = System.currentTimeMillis()/1000;
-        Log.e("Time:move2", String.valueOf(t_3 - t_2));
+        //moveToWrapper2(pointA2,quatA2);
+        //long t_3 = System.currentTimeMillis()/1000;
+        //Log.e("Time:move2", String.valueOf(t_3 - t_2));
         moveToWrapper2(pointA3,quatA3);
         long t_4 = System.currentTimeMillis()/1000;
-        Log.e("Time:move3", String.valueOf(t_4 - t_3));
+        //Log.e("Time:move3", String.valueOf(t_4 - t_3));
+        Log.e("Time:move3", String.valueOf(t_4 - t_2));
 
         Log.e("bmp1_1", "Start ZXing QR reading");
         String valueX = readQRcodeWrapper();
@@ -467,7 +469,7 @@ public class YourService extends KiboRpcService {
             Log.e("finished moving 1", "");
             moveToWrapper2(pointAd,quatA);
             Log.e("finished moving 2", "");
-        } else if ((p == 5) || (p == 6)) {
+        } else if (p == 5)  {
             Point pointAA1 = new Point(10.8,ady,pointA.getZ());
             Point pointAA2 = new Point(10.8,ady,adz);
             moveToWrapper2(pointAA1,quatA);
@@ -476,11 +478,21 @@ public class YourService extends KiboRpcService {
             Log.e("finished moving 2", "");
             moveToWrapper2(pointAd,quatA);
             Log.e("finished moving 3", "");
-        } else {
+        } else if (p == 6) {
+            Point pointAA1 = new Point(10.8,ady,pointA.getZ());
+            //Point pointAA2 = new Point(10.8,ady,adz);
+            Point pointAA2 = new Point(11.5,ady,adz);
+            //moveToWrapper2(pointAA1,quatA);
+            //Log.e("finished moving 1", "");
+            moveToWrapper2(pointAA2,quatA);
+            Log.e("finished moving 2", "");
+            //moveToWrapper2(pointAd,quatA);
+            //Log.e("finished moving 3", "");
+        }  else {
             Point pointAA1 = new Point(11.5,ady,pointA.getZ());
             Point pointAA2 = new Point(11.5,ady,adz);
-            moveToWrapper2(pointAA1,quatA);
-            Log.e("finished moving 1", "");
+            //moveToWrapper2(pointAA1,quatA);
+            //Log.e("finished moving 1", "");
             moveToWrapper2(pointAA2,quatA);
             Log.e("finished moving 2", "");
             //moveToWrapper2(pointAd,quatA);
@@ -619,7 +631,10 @@ public class YourService extends KiboRpcService {
             moveToWrapper2(pointB,quatA);
             Log.e("finished moving 2", "");
         }else if (p == 6) {
+            Point pointAA0 = new Point(10.8,ady,adz);
             Point pointAA1 = new Point(10.6,-8.8,5.25);
+            moveToWrapper2(pointAA0,quatA);
+            Log.e("finished moving 0", "");
             moveToWrapper2(pointAA1,quatA);
             Log.e("finished moving 1", "");
             moveToWrapper2(pointB,quatA);
@@ -629,8 +644,8 @@ public class YourService extends KiboRpcService {
             Point pointAA2 = new Point(pointAA1.getX(),ady,pointA.getZ());
             //Point pointAA3 = new Point(pointAA2.getX()-0.9,pointAA2.getY()+0.8,4.73);
             Point pointAA3 = new Point(10.6,-8.8,4.73);
-            moveToWrapper2(pointAA1,quatA);
-            Log.e("finished moving 1", "");
+            //moveToWrapper2(pointAA1,quatA);
+            //Log.e("finished moving 1", "");
             moveToWrapper2(pointAA2,quatA);
             Log.e("finished moving 2", "");
             moveToWrapper2(pointAA3,quatA);
