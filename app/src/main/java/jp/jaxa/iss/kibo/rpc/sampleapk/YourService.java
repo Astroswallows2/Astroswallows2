@@ -512,6 +512,8 @@ public class YourService extends KiboRpcService {
             //moveToWrapper2(pointAd,quatA);
             // moveToWrapper2(pointAd,quatA);
             //Log.e("finished moving 3", "");
+            moveToWrapper2(pointAd,quatA);
+            Log.e("finished moving 3", "");
         }
     }
 
