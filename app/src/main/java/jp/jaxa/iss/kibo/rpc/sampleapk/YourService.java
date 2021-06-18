@@ -41,8 +41,8 @@ public class YourService extends KiboRpcService {
         Quaternion quatA1 = new Quaternion(0,0,0,1);
         Point pointA2 = new Point(11.35,-10,4.5);
         Quaternion quatA2 = new Quaternion(0,0,-0.707f,0.707f);
-        //Point pointA3 = new Point(11.35,-10,4.95);
-        Point pointA3 = new Point(11.5,-10,4.95);
+        Point pointA3 = new Point(11.35,-10,4.95);
+        //Point pointA3 = new Point(11.6,-10,4.95);
         Quaternion quatA3 = new Quaternion(0,0,-0.707f,0.707f);
         long t_1 = System.currentTimeMillis()/1000;
         Log.e("Time:start mission", String.valueOf(t_1 - t_0));
@@ -108,7 +108,14 @@ public class YourService extends KiboRpcService {
         Log.e("Time:sleep", String.valueOf(t_7 - t_6));
 
 
-        moveToWrapper(aax, aay, aaz, quatA3.getX(), quatA3.getY(), quatA3.getZ(), quatA3.getW());
+        //moveToWrapper(aax, aay, aaz, quatA3.getX(), quatA3.getY(), quatA3.getZ(), quatA3.getW());
+        if(p==7){
+            moveToWrapper(11.5, aay, aaz, quatA3.getX(), quatA3.getY(), quatA3.getZ(), quatA3.getW());
+        }else if(p==6){
+            moveToWrapper(11.6, aay, aaz, quatA3.getX(), quatA3.getY(), quatA3.getZ(), quatA3.getW());
+        }else {
+            moveToWrapper(aax, aay, aaz, quatA3.getX(), quatA3.getY(), quatA3.getZ(), quatA3.getW());
+        }
         long t_8 = System.currentTimeMillis()/1000;
         Log.e("Time:stay A'", String.valueOf(t_8 - t_7));
         //pathplan(p,aax,aay,aaz,pointA3,quatA3);
@@ -116,23 +123,22 @@ public class YourService extends KiboRpcService {
         //relativemoveToWrapper(0,0,0, quatA3.getX(), quatA3.getY(), quatA3.getZ(), quatA3.getW());
 
 
-        PointCloud point_cloud = api.getPointCloudHazCam();
-        double[][] array = point_cloud2list(point_cloud);
+        //PointCloud point_cloud = api.getPointCloudHazCam();
+        //double[][] array = point_cloud2list(point_cloud);
 /*
         for (int i = 0; i < array.length; i++){
             Log.e("",String.valueOf(array[i][0]) + " " + String.valueOf(array[i][1]) + " " + String.valueOf(array[i][2]));
         }
 */
 
-        int i = 104;
-        Log.e("Hazcam",String.valueOf(array[i][0]) + " " + String.valueOf(array[i][1]) + " " + String.valueOf(array[i][2]));
-        double distance = - array[i][2] + aay - 0.1328;
-        Log.e("Target plane is located in", String.valueOf(distance));
+        //int i = 104;
+        //Log.e("Hazcam",String.valueOf(array[i][0]) + " " + String.valueOf(array[i][1]) + " " + String.valueOf(array[i][2]));
+        //double distance = - array[i][2] + aay - 0.1328;
+        //Log.e("Target plane is located in", String.valueOf(distance));
         long t_9 = System.currentTimeMillis()/1000;
-        Log.e("Time:HazCam", String.valueOf(t_9 - t_8));
-        moveToWrapper(aax, aay, aaz, quatA3.getX(), quatA3.getY(), quatA3.getZ(), quatA3.getW());
+        //Log.e("Time:HazCam", String.valueOf(t_9 - t_8));
         long t_10 = System.currentTimeMillis()/1000;
-        Log.e("Time:stay", String.valueOf(t_10 - t_9));
+        //Log.e("Time:stay", String.valueOf(t_10 - t_9));
 
 
 
@@ -150,7 +156,8 @@ public class YourService extends KiboRpcService {
         //double[] a = {0.15, 0, 0};
 
         //target_center = M.addVec(target_center, a);
-        target_center[0] = array[i][2] + 0.1328;
+        //target_center[0] = array[i][2] + 0.1328;
+        target_center[0] = 10.5843 + aay;
         Log.e("finished changing the origin", Arrays.toString(target_center));
         double[] navcam = {0.1177, -0.0422, -0.0826};
         double[] laser = {0.1302, 0.0572, -0.1111};
@@ -173,7 +180,14 @@ public class YourService extends KiboRpcService {
 
         long t_12 = System.currentTimeMillis()/1000;
         Log.e("Time:calculate q_target", String.valueOf(t_12 - t_11));
-        moveToWrapper(aax,aay,aaz, q_target.getX(), q_target.getY(), q_target.getZ(), q_target.getW());
+        if(p==7){
+            moveToWrapper(11.5, aay, aaz, q_target.getX(), q_target.getY(), q_target.getZ(), q_target.getW());
+        }else if(p==6){
+            moveToWrapper(11.6, aay, aaz, q_target.getX(), q_target.getY(), q_target.getZ(), q_target.getW());
+        }else {
+            moveToWrapper(aax, aay, aaz, q_target.getX(), q_target.getY(), q_target.getZ(), q_target.getW());
+        }
+        //moveToWrapper(aax,aay,aaz, q_target.getX(), q_target.getY(), q_target.getZ(), q_target.getW());
         Log.e("finished rotating", "");
         long t_13 = System.currentTimeMillis()/1000;
 
@@ -479,11 +493,11 @@ public class YourService extends KiboRpcService {
             moveToWrapper2(pointAd,quatA);
             Log.e("finished moving 3", "");
         } else if (p == 6) {
-            Point pointAA1 = new Point(10.8,ady,pointA.getZ());
+            Point pointAA1 = new Point(11.6,ady,pointA.getZ());
             //Point pointAA2 = new Point(10.8,ady,adz);
-            Point pointAA2 = new Point(11.5,ady,adz);
-            //moveToWrapper2(pointAA1,quatA);
-            //Log.e("finished moving 1", "");
+            Point pointAA2 = new Point(11.6,ady,adz);
+            moveToWrapper2(pointAA1,quatA);
+            Log.e("finished moving 1", "");
             moveToWrapper2(pointAA2,quatA);
             Log.e("finished moving 2", "");
             //moveToWrapper2(pointAd,quatA);
@@ -491,11 +505,12 @@ public class YourService extends KiboRpcService {
         }  else {
             Point pointAA1 = new Point(11.5,ady,pointA.getZ());
             Point pointAA2 = new Point(11.5,ady,adz);
-            //moveToWrapper2(pointAA1,quatA);
-            //Log.e("finished moving 1", "");
+            moveToWrapper2(pointAA1,quatA);
+            Log.e("finished moving 1", "");
             moveToWrapper2(pointAA2,quatA);
             Log.e("finished moving 2", "");
             //moveToWrapper2(pointAd,quatA);
+            // moveToWrapper2(pointAd,quatA);
             //Log.e("finished moving 3", "");
         }
     }
