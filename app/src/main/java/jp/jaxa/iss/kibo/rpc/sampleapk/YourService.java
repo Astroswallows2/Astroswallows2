@@ -468,7 +468,7 @@ public class YourService extends KiboRpcService {
             Log.e("finished moving 1", "");
             //moveToWrapper2(pointAd,quatA);
             //Log.e("finished moving 2", "");
-        } else if ((p == 5) || (p == 6)) {
+        } else if (p == 5){
             //Point pointAA1 = new Point(10.8,ady,pointA.getZ());
             Point pointAA1 = new Point(10.6,ady,pointA.getZ());
             //Point pointAA2 = new Point(10.8,ady,adz);
@@ -479,11 +479,21 @@ public class YourService extends KiboRpcService {
             Log.e("finished moving 2", "");
             //moveToWrapper2(pointAd,quatA);
             //Log.e("finished moving 3", "");
+        } else if (p == 6) {
+            Point pointAA1 = new Point(11.54,ady,pointA.getZ());
+            //Point pointAA2 = new Point(10.8,ady,adz);
+            Point pointAA2 = new Point(11.54,ady,adz);
+            //moveToWrapper2(pointAA1,quatA);
+            //Log.e("finished moving 1", "");
+            moveToWrapper2(pointAA2,quatA);
+            Log.e("finished moving 2", "");
+            //moveToWrapper2(pointAd,quatA);
+            //Log.e("finished moving 3", "");
         } else {
-            Point pointAA1 = new Point(11.5,ady,pointA.getZ());
+            //Point pointAA1 = new Point(11.5,ady,pointA.getZ());
             Point pointAA2 = new Point(11.5,ady,adz);
-            moveToWrapper2(pointAA1,quatA);
-            Log.e("finished moving 1", "");
+            //moveToWrapper2(pointAA1,quatA);
+            //Log.e("finished moving 1", "");
             moveToWrapper2(pointAA2,quatA);
             Log.e("finished moving 2", "");
             //moveToWrapper2(pointAd,quatA);
@@ -506,11 +516,15 @@ public class YourService extends KiboRpcService {
             Log.e("finished moving 1", "");
             //moveToWrapper2(pointAd,quatA);
             //Log.e("finished moving 2", "");
-        } else if ((p == 5) || (p == 6)) {
-            Point pointAA2 = new Point(10.6,ady,adz);//左回り
+        } else if (p == 5) {
+            Point pointAA2 = new Point(10.6, ady, adz);//左回り
             //Point pointAA2 = new Point(11.54,ady,adz)//右回り
-            moveToWrapper2(pointAA2,quatA);
+            moveToWrapper2(pointAA2, quatA);
             Log.e("finished moving 2", "");
+        }else if (p == 6){
+                Point pointAA2 = new Point(11.54,ady,adz);
+                moveToWrapper2(pointAA2,quatA);
+                Log.e("finished moving 2", "");
         } else {
             Point pointAA2 = new Point(11.5,ady,adz);
             moveToWrapper2(pointAA2,quatA);
@@ -656,11 +670,11 @@ public class YourService extends KiboRpcService {
             Log.e("finished moving 2", "");
         }else{
             Point pointAA1 = new Point(11.5,ady,adz);
-            Point pointAA2 = new Point(pointAA1.getX(),ady,pointA.getZ());
-            //Point pointAA3 = new Point(pointAA2.getX()-0.9,pointAA2.getY()+0.8,4.73);
+            //Point pointAA2 = new Point(pointAA1.getX(),ady,pointA.getZ());
+            Point pointAA2 = new Point(11.54,-10,4.95);
             Point pointAA3 = new Point(10.6,-8.8,4.73);
-            moveToWrapper2(pointAA1,quatA);
-            Log.e("finished moving 1", "");
+            //moveToWrapper2(pointAA1,quatA);
+            //Log.e("finished moving 1", "");
             moveToWrapper2(pointAA2,quatA);
             Log.e("finished moving 2", "");
             moveToWrapper2(pointAA3,quatA);
