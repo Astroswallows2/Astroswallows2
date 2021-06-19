@@ -41,8 +41,8 @@ public class YourService extends KiboRpcService {
         Quaternion quatA1 = new Quaternion(0,0,0,1);
         Point pointA2 = new Point(11.35,-10,4.5);
         Quaternion quatA2 = new Quaternion(0,0,-0.707f,0.707f);
-        Point pointA3 = new Point(11.35,-10,4.95);
-        //Point pointA3 = new Point(11.6,-10,4.95);
+        //Point pointA3 = new Point(11.35,-10,4.95);
+        Point pointA3 = new Point(11.54,-10,4.95);
         Quaternion quatA3 = new Quaternion(0,0,-0.707f,0.707f);
         long t_1 = System.currentTimeMillis()/1000;
         Log.e("Time:start mission", String.valueOf(t_1 - t_0));
@@ -355,7 +355,7 @@ public class YourService extends KiboRpcService {
     public String readQrcode(Bitmap bitmap) {
         //final int navcamWidth = 1280;
         //final int navcamHeight = 960;
-        final int trimStartx = 480;
+        final int trimStartx = 320;
         final int trimStarty = 500;
         final int trimWidth = 320;
         final int trimHeight = 380;
@@ -496,8 +496,8 @@ public class YourService extends KiboRpcService {
             Point pointAA1 = new Point(11.54,ady,pointA.getZ());
             //Point pointAA2 = new Point(10.8,ady,adz);
             Point pointAA2 = new Point(11.54,ady,adz);
-            moveToWrapper2(pointAA1,quatA);
-            Log.e("finished moving 1", "");
+            //moveToWrapper2(pointAA1,quatA);
+            //Log.e("finished moving 1", "");
             moveToWrapper2(pointAA2,quatA);
             Log.e("finished moving 2", "");
             //moveToWrapper2(pointAd,quatA);
@@ -505,15 +505,13 @@ public class YourService extends KiboRpcService {
         }  else {
             Point pointAA1 = new Point(11.5,ady,pointA.getZ());
             Point pointAA2 = new Point(11.5,ady,adz);
-            moveToWrapper2(pointAA1,quatA);
-            Log.e("finished moving 1", "");
+            //moveToWrapper2(pointAA1,quatA);
+            //Log.e("finished moving 1", "");
             moveToWrapper2(pointAA2,quatA);
             Log.e("finished moving 2", "");
             //moveToWrapper2(pointAd,quatA);
             // moveToWrapper2(pointAd,quatA);
             //Log.e("finished moving 3", "");
-            moveToWrapper2(pointAd,quatA);
-            Log.e("finished moving 3", "");
         }
     }
 
