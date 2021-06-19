@@ -41,7 +41,8 @@ public class YourService extends KiboRpcService {
         Quaternion quatA1 = new Quaternion(0,0,0,1);
         Point pointA2 = new Point(11.35,-10,4.5);
         Quaternion quatA2 = new Quaternion(0,0,-0.707f,0.707f);
-        Point pointA3 = new Point(11.35,-10,4.95);
+        //Point pointA3 = new Point(11.35,-10,4.95);
+        Point pointA3 = new Point(11.54,-10,4.95);
         Quaternion quatA3 = new Quaternion(0,0,-0.707f,0.707f);
         long t_1 = System.currentTimeMillis()/1000;
         Log.e("Time:start mission", String.valueOf(t_1 - t_0));
@@ -94,7 +95,7 @@ public class YourService extends KiboRpcService {
 
         //read ARcode
 
-        Log.e("sleep 60 sec", "");
+        Log.e("sleep 5 sec", "");
         try {
             Thread.sleep(5000);
         } catch (InterruptedException e) {
@@ -105,34 +106,23 @@ public class YourService extends KiboRpcService {
         long t_7 = System.currentTimeMillis()/1000;
         Log.e("Time:sleep", String.valueOf(t_7 - t_6));
 
+        pathplan3(p,aax,aay,aaz,pointA3,quatA3);
 
-        moveToWrapper(aax, aay, aaz, quatA3.getX(), quatA3.getY(), quatA3.getZ(), quatA3.getW());
+        //moveToWrapper(aax, aay, aaz, quatA3.getX(), quatA3.getY(), quatA3.getZ(), quatA3.getW());
         long t_8 = System.currentTimeMillis()/1000;
         Log.e("Time:stay A'", String.valueOf(t_8 - t_7));
-        //pathplan(p,aax,aay,aaz,pointA3,quatA3);
-        //moveToWrapper2(pointA3,quatA4);
-        //relativemoveToWrapper(0,0,0, quatA3.getX(), quatA3.getY(), quatA3.getZ(), quatA3.getW());
-
-
-
-        //PointCloud point_cloud = api.getPointCloudHazCam();
-        //double[][] array = point_cloud2list(point_cloud);
-/*
-        for (int i = 0; i < array.length; i++){
-            Log.e("",String.valueOf(array[i][0]) + " " + String.valueOf(array[i][1]) + " " + String.valueOf(array[i][2]));
-        }
-*/
 
         //int i = 104;
         //Log.e("Hazcam",String.valueOf(array[i][0]) + " " + String.valueOf(array[i][1]) + " " + String.valueOf(array[i][2]));
         //double distance = - array[i][2] + aay - 0.1328;
         //Log.e("Target plane is located in", String.valueOf(distance));
         long t_9 = System.currentTimeMillis()/1000;
-
         Log.e("Time:HazCam", String.valueOf(t_9 - t_8));
-        moveToWrapper(aax, aay, aaz, quatA3.getX(), quatA3.getY(), quatA3.getZ(), quatA3.getW());
+        //moveToWrapper(aax, aay, aaz, quatA3.getX(), quatA3.getY(), quatA3.getZ(), quatA3.getW());
+        pathplan3(p,aax,aay,aaz,pointA3,quatA3);
         long t_10 = System.currentTimeMillis()/1000;
         Log.e("Time:stay", String.valueOf(t_10 - t_9));
+
 
 
 
@@ -141,7 +131,7 @@ public class YourService extends KiboRpcService {
         //double[] target_center2 = readARcode_from_one();
         Log.e("finished reading ARcode", Arrays.toString(target_center));
         long t_11 = System.currentTimeMillis()/1000;
-        Log.e("Time:read AR", String.valueOf(t_11 - t_10));
+        ////Log.e("Time:read AR", String.valueOf(t_11 - t_10));
         //ターゲットの中心座標を１つのARの位置から求める
         //Log.e("finished reading ARcode2", Arrays.toString(target_center2));
 
@@ -164,6 +154,7 @@ public class YourService extends KiboRpcService {
         //astrobee座標系でのクォータニオンの計算終了
         Log.e("finished calculating q_target in astrobee's origin", String.valueOf(q_target.getX()) + del + String.valueOf(q_target.getY()) + del + String.valueOf(q_target.getZ()) + del + String.valueOf(q_target.getW()));
         q_target = M.mul(quatA3, q_target);
+        Quaternion quatA4 = new Quaternion(q_target.getX(), q_target.getY(), q_target.getZ(), q_target.getW());
         //kibo座標系でのクォータニオンの計算終了
         Log.e("finished calculating q_target in kibo' origin", String.valueOf(q_target.getX()) + del + String.valueOf(q_target.getY()) + del + String.valueOf(q_target.getZ()) + del + String.valueOf(q_target.getW()));
         //moveToWrapper(axa, aya, aza, quatA3.getX(), quatA3.getY(), quatA3.getZ(), quatA3.getW());
@@ -174,7 +165,8 @@ public class YourService extends KiboRpcService {
 
         long t_12 = System.currentTimeMillis()/1000;
         Log.e("Time:calculate q_target", String.valueOf(t_12 - t_11));
-        moveToWrapper(aax,aay,aaz, q_target.getX(), q_target.getY(), q_target.getZ(), q_target.getW());
+        //moveToWrapper(aax,aay,aaz, q_target.getX(), q_target.getY(), q_target.getZ(), q_target.getW());
+        pathplan3(p,aax,aay,aaz,pointA3,quatA4);
         Log.e("finished rotating", "");
         long t_13 = System.currentTimeMillis()/1000;
 
@@ -226,7 +218,8 @@ public class YourService extends KiboRpcService {
 
         // Take a snapshot
         Log.e("Snapshot", "Bee start taking a snapshot .");
-        moveToWrapper(aax,aay,aaz, q_target.getX(), q_target.getY(), q_target.getZ(), q_target.getW());
+        //moveToWrapper(aax,aay,aaz,q_target.getX(),q_target.getY(),q_target.getZ(),q_target.getW());
+        pathplan3(p,aax,aay,aaz,pointA3,quatA4);
         api.takeSnapshot();
         Log.e("Snapshot", "Bee finished taking a snapshot .");
 
@@ -343,11 +336,14 @@ public class YourService extends KiboRpcService {
     public String readQrcode(Bitmap bitmap) {
         //final int navcamWidth = 1280;
         //final int navcamHeight = 960;
-        final int trimStartx = 480;
+        /*final int trimStartx = 480;
+        final int trimStarty = 500;
+        final int trimWidth = 320;
+        final int trimHeight = 380;*/
+        final int trimStartx = 320;
         final int trimStarty = 500;
         final int trimWidth = 320;
         final int trimHeight = 380;
-
         //トリミング作業
         Bitmap bitmap_trim = Bitmap.createBitmap(bitmap, trimStartx, trimStarty, trimWidth, trimHeight);
         // Bitmap のサイズを取得して、ピクセルデータを取得する
@@ -462,24 +458,27 @@ public class YourService extends KiboRpcService {
     private void pathplan(int p, double adx, double ady, double adz, Point pointA,Quaternion quatA) {
         Point pointAd = new Point(adx,ady,adz);
         if ((p == 1) || (p == 2) ||(p == 8)) {
-            moveToWrapper2(pointAd,quatA);
-            Log.e("finished moving 1", "");
+            ;
+            //moveToWrapper2(pointAd,quatA);
+            //Log.e("finished moving 1", "");
         } else if ((p == 3) || (p == 4)) {
             //2段階移動(1回目：xyのみ移動，2回目：zのみ移動)
             Point pointAA = new Point(adx,ady,pointA.getZ());
             moveToWrapper2(pointAA,quatA);
             Log.e("finished moving 1", "");
-            moveToWrapper2(pointAd,quatA);
-            Log.e("finished moving 2", "");
+            //moveToWrapper2(pointAd,quatA);
+            //Log.e("finished moving 2", "");
         } else if ((p == 5) || (p == 6)) {
-            Point pointAA1 = new Point(10.8,ady,pointA.getZ());
-            Point pointAA2 = new Point(10.8,ady,adz);
+            //Point pointAA1 = new Point(10.8,ady,pointA.getZ());
+            Point pointAA1 = new Point(10.6,ady,pointA.getZ());
+            //Point pointAA2 = new Point(10.8,ady,adz);
+            Point pointAA2 = new Point(10.6,ady,adz);
             moveToWrapper2(pointAA1,quatA);
             Log.e("finished moving 1", "");
             moveToWrapper2(pointAA2,quatA);
             Log.e("finished moving 2", "");
-            moveToWrapper2(pointAd,quatA);
-            Log.e("finished moving 3", "");
+            //moveToWrapper2(pointAd,quatA);
+            //Log.e("finished moving 3", "");
         } else {
             Point pointAA1 = new Point(11.5,ady,pointA.getZ());
             Point pointAA2 = new Point(11.5,ady,adz);
@@ -487,8 +486,35 @@ public class YourService extends KiboRpcService {
             Log.e("finished moving 1", "");
             moveToWrapper2(pointAA2,quatA);
             Log.e("finished moving 2", "");
-            moveToWrapper2(pointAd,quatA);
-            Log.e("finished moving 3", "");
+            //moveToWrapper2(pointAd,quatA);
+            //Log.e("finished moving 3", "");
+        }
+    }
+
+    //snapshotとgetnavcam用
+    private void pathplan3(int p,double adx, double ady, double adz,Point pointA,Quaternion quatA) {
+        Point pointAd = new Point(adx,ady,adz);
+        Point pointA3 = new Point(11.35,-10,4.95);
+        Quaternion quatA3 = new Quaternion(0,0,-0.707f,0.707f);
+        if ((p == 1) || (p == 2) ||(p == 8)) {
+            moveToWrapper2(pointA3,quatA);
+            Log.e("finished moving 1", "");
+        } else if ((p == 3) || (p == 4)) {
+            //2段階移動(1回目：xyのみ移動，2回目：zのみ移動)
+            Point pointAA = new Point(adx,ady,pointA.getZ());
+            moveToWrapper2(pointAA,quatA);
+            Log.e("finished moving 1", "");
+            //moveToWrapper2(pointAd,quatA);
+            //Log.e("finished moving 2", "");
+        } else if ((p == 5) || (p == 6)) {
+            Point pointAA2 = new Point(10.6,ady,adz);//左回り
+            //Point pointAA2 = new Point(11.54,ady,adz)//右回り
+            moveToWrapper2(pointAA2,quatA);
+            Log.e("finished moving 2", "");
+        } else {
+            Point pointAA2 = new Point(11.5,ady,adz);
+            moveToWrapper2(pointAA2,quatA);
+            Log.e("finished moving 2", "");
         }
     }
 
