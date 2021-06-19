@@ -41,7 +41,8 @@ public class YourService extends KiboRpcService {
         Quaternion quatA1 = new Quaternion(0,0,0,1);
         Point pointA2 = new Point(11.35,-10,4.5);
         Quaternion quatA2 = new Quaternion(0,0,-0.707f,0.707f);
-        Point pointA3 = new Point(11.35,-10,4.95);
+        //Point pointA3 = new Point(11.35,-10,4.95);
+        Point pointA3 = new Point(11.54,-10,4.95);
         Quaternion quatA3 = new Quaternion(0,0,-0.707f,0.707f);
         long t_1 = System.currentTimeMillis()/1000;
         Log.e("Time:start mission", String.valueOf(t_1 - t_0));
@@ -105,15 +106,8 @@ public class YourService extends KiboRpcService {
         long t_7 = System.currentTimeMillis()/1000;
         Log.e("Time:sleep", String.valueOf(t_7 - t_6));
 
-        //109がわしが追加した分，110~116が野村君追加分いい方を使ってください！
         pathplan3(p,aax,aay,aaz,pointA3,quatA3);
-     /*   if(p==7){
-            moveToWrapper(11.5, aay, aaz, quatA3.getX(), quatA3.getY(), quatA3.getZ(), quatA3.getW());
-        }else if(p==6){
-            moveToWrapper(11.54, aay, aaz, quatA3.getX(), quatA3.getY(), quatA3.getZ(), quatA3.getW());
-        }else {
-            moveToWrapper(aax, aay, aaz, quatA3.getX(), quatA3.getY(), quatA3.getZ(), quatA3.getW());
-        }*/
+
         //moveToWrapper(aax, aay, aaz, quatA3.getX(), quatA3.getY(), quatA3.getZ(), quatA3.getW());
         long t_8 = System.currentTimeMillis()/1000;
         Log.e("Time:stay A'", String.valueOf(t_8 - t_7));
@@ -513,7 +507,8 @@ public class YourService extends KiboRpcService {
             //moveToWrapper2(pointAd,quatA);
             //Log.e("finished moving 2", "");
         } else if ((p == 5) || (p == 6)) {
-            Point pointAA2 = new Point(10.6,ady,adz);
+            Point pointAA2 = new Point(10.6,ady,adz);//左回り
+            //Point pointAA2 = new Point(11.54,ady,adz)//右回り
             moveToWrapper2(pointAA2,quatA);
             Log.e("finished moving 2", "");
         } else {
