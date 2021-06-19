@@ -105,23 +105,18 @@ public class YourService extends KiboRpcService {
         long t_7 = System.currentTimeMillis()/1000;
         Log.e("Time:sleep", String.valueOf(t_7 - t_6));
 
+        //109がわしが追加した分，110~116が野村君追加分いい方を使ってください！
         pathplan3(p,aax,aay,aaz,pointA3,quatA3);
+     /*   if(p==7){
+            moveToWrapper(11.5, aay, aaz, quatA3.getX(), quatA3.getY(), quatA3.getZ(), quatA3.getW());
+        }else if(p==6){
+            moveToWrapper(11.54, aay, aaz, quatA3.getX(), quatA3.getY(), quatA3.getZ(), quatA3.getW());
+        }else {
+            moveToWrapper(aax, aay, aaz, quatA3.getX(), quatA3.getY(), quatA3.getZ(), quatA3.getW());
+        }*/
         //moveToWrapper(aax, aay, aaz, quatA3.getX(), quatA3.getY(), quatA3.getZ(), quatA3.getW());
         long t_8 = System.currentTimeMillis()/1000;
         Log.e("Time:stay A'", String.valueOf(t_8 - t_7));
-        //pathplan(p,aax,aay,aaz,pointA3,quatA3);
-        //moveToWrapper2(pointA3,quatA4);
-
-
-        //ここからとりあえずコメントアウト
-        //PointCloud point_cloud = api.getPointCloudHazCam();
-        //double[][] array = point_cloud2list(point_cloud);
-
-/*
-        for (int i = 0; i < array.length; i++){
-            Log.e("",String.valueOf(array[i][0]) + " " + String.valueOf(array[i][1]) + " " + String.valueOf(array[i][2]));
-        }
-*/
 
         //int i = 104;
         //Log.e("Hazcam",String.valueOf(array[i][0]) + " " + String.valueOf(array[i][1]) + " " + String.valueOf(array[i][2]));
@@ -152,6 +147,7 @@ public class YourService extends KiboRpcService {
 
         //target_center = M.addVec(target_center, a);
         //target_center[0] = array[i][2] + 0.1328;
+        target_center[0] = 10.5843 + aay;
         Log.e("finished changing the origin", Arrays.toString(target_center));
         double[] navcam = {0.1177, -0.0422, -0.0826};
         double[] laser = {0.1302, 0.0572, -0.1111};
@@ -346,11 +342,14 @@ public class YourService extends KiboRpcService {
     public String readQrcode(Bitmap bitmap) {
         //final int navcamWidth = 1280;
         //final int navcamHeight = 960;
-        final int trimStartx = 480;
+        /*final int trimStartx = 480;
+        final int trimStarty = 500;
+        final int trimWidth = 320;
+        final int trimHeight = 380;*/
+        final int trimStartx = 320;
         final int trimStarty = 500;
         final int trimWidth = 320;
         final int trimHeight = 380;
-
         //トリミング作業
         Bitmap bitmap_trim = Bitmap.createBitmap(bitmap, trimStartx, trimStarty, trimWidth, trimHeight);
         // Bitmap のサイズを取得して、ピクセルデータを取得する
