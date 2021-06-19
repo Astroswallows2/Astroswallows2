@@ -23,7 +23,9 @@ import org.opencv.utils.Converters;
 public class AR{
 
     public static Mat makeCamMat(){
-        double camMatData[] = {344.173397, 0.000000, 630.793795, 0.000000, 344.277922, 487.033834, 0.000000, 0.000000, 1.000000};
+        //double camMatData[] = {344.173397, 0.000000, 630.793795, 0.000000, 344.277922, 487.033834, 0.000000, 0.000000, 1.000000};
+        double camMatData[] = {567.229305D, 0.0D, 659.077221D, 0.0D, 574.192915D, 517.007571D, 0.0D, 0.0D, 1.0D};
+        //double camMatData[] = {692.827528D, 0.0D, 571.399891D, 0.0D, 691.919547D, 504.956891D, 0.0D, 0.0D, 1.0D};
         Mat cameraMatrix = new Mat(3, 3, CvType.CV_64F);
         cameraMatrix.put(0,0,camMatData);
         return cameraMatrix;
@@ -31,7 +33,10 @@ public class AR{
     }
 
     public static Mat makeDistCoef(){
-        double distCoefData[] = {-0.152963, 0.017530, -0.001107, -0.000210, 0.000000};
+        //double distCoefData[] = {-0.152963, 0.017530, -0.001107, -0.000210, 0.000000};
+        double distCoefData[] = {-0.216247D, 0.03875D, -0.010157D, 0.001969D, 0.0D};
+        //double distCoefData[] = {-0.312191D, 0.073843D, -9.18E-4D, 0.00189D, 0.0D};
+
         Mat distortionCoefficients = new Mat(1, 5, CvType.CV_64F);
         distortionCoefficients.put(0,0,distCoefData);
         return distortionCoefficients;
@@ -78,8 +83,6 @@ public class AR{
         Log.e("AR4 position", String.valueOf(AR4[0]));
 
         double[] target_center = M.scalDiv(M.addVec(AR1, M.addVec(AR2, M.addVec(AR3, AR4))), 4);
-        Quaternion rotx3 = new Quaternion((float) Math.sin(Math.toRadians(3/2)),0,0,(float) Math.cos(Math.toRadians(3/2)));
-        //target_center = M.rotateVec(target_center, rotx3);
         return target_center;
     }
 

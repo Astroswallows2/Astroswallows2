@@ -18,6 +18,7 @@ package jp.jaxa.iss.kibo.rpc.sampleapk;
         import java.util.regex.Matcher;
         import java.util.regex.Pattern;
 
+        import gov.nasa.arc.astrobee.Kinematics;
         import gov.nasa.arc.astrobee.Result;
         import gov.nasa.arc.astrobee.types.Point;
         import gov.nasa.arc.astrobee.types.Quaternion;
@@ -32,6 +33,7 @@ package jp.jaxa.iss.kibo.rpc.sampleapk;
 public class YourService extends KiboRpcService {
     @Override
     protected void runPlan1() {
+
         // astrobee is undocked and the mission starts
         long t_0 = System.currentTimeMillis()/1000;
         api.startMission();
@@ -44,17 +46,21 @@ public class YourService extends KiboRpcService {
         Point pointA3 = new Point(11.35,-10,4.95);
         Quaternion quatA3 = new Quaternion(0,0,-0.707f,0.707f);
         long t_1 = System.currentTimeMillis()/1000;
+        get_runtime();
         Log.e("Time:start mission", String.valueOf(t_1 - t_0));
         moveToWrapper2(pointA1,quatA1);
         long t_2 = System.currentTimeMillis()/1000;
+        get_runtime();
         Log.e("Time:move1", String.valueOf(t_2 - t_1));
 
         //pointAに二段階で移動
         moveToWrapper2(pointA2,quatA2);
         long t_3 = System.currentTimeMillis()/1000;
+        get_runtime();
         Log.e("Time:move2", String.valueOf(t_3 - t_2));
         moveToWrapper2(pointA3,quatA3);
         long t_4 = System.currentTimeMillis()/1000;
+        get_runtime();
         Log.e("Time:move3", String.valueOf(t_4 - t_3));
 
         Log.e("bmp1_1", "Start ZXing QR reading");
@@ -68,10 +74,14 @@ public class YourService extends KiboRpcService {
         //QRから読み取った文字列から数値のみ抜き出してdoubleに変換
         int p = (int) pxyz[0];
         double aax = pxyz[1];
-        double aay = pxyz[2];
+        double aay = pxyz[2] - 0.2;
         double aaz = pxyz[3];
+        //double aax = 11.33 + 0.17;
+        //double aay = -9.8-0.2;
+        //double aaz = 5.29;
         Log.e("pattern and pointAA x y z", "pattern:" + p + "[x:" + aax + "y:" + aay + "z:" + aaz + "]");
         long t_5 = System.currentTimeMillis()/1000;
+        get_runtime();
         Log.e("Time:read QR and calculate A'", String.valueOf(t_5 - t_4));
         //回転クォータニオン
         //Quaternion rotate2AR = new Quaternion(0,(float) - Math.sin(Math.toRadians(30/2)),0, (float) Math.cos(Math.toRadians(30/2)));
@@ -82,6 +92,7 @@ public class YourService extends KiboRpcService {
         //A'への移動経路
         pathplan(p,aax,aay,aaz,pointA3,quatA3);
         long t_6 = System.currentTimeMillis()/1000;
+        get_runtime();
         Log.e("Time:pathplan", String.valueOf(t_6 - t_5));
 /*
         //ARからターゲットまでの距離を考えて補正
@@ -94,7 +105,7 @@ public class YourService extends KiboRpcService {
 
         //read ARcode
 
-        Log.e("sleep 60 sec", "");
+        Log.e("sleep 5 sec", "");
         try {
             Thread.sleep(5000);
         } catch (InterruptedException e) {
@@ -103,11 +114,13 @@ public class YourService extends KiboRpcService {
         Log.e("start read ARcode", "");
         //relativemoveToWrapper(0,0,0,0,0,-0.707f,0.707f);
         long t_7 = System.currentTimeMillis()/1000;
+        get_runtime();
         Log.e("Time:sleep", String.valueOf(t_7 - t_6));
 
 
-        moveToWrapper(aax, aay, aaz, quatA3.getX(), quatA3.getY(), quatA3.getZ(), quatA3.getW());
+        //moveToWrapper(aax, aay, aaz, quatA3.getX(), quatA3.getY(), quatA3.getZ(), quatA3.getW());
         long t_8 = System.currentTimeMillis()/1000;
+        get_runtime();
         Log.e("Time:stay A'", String.valueOf(t_8 - t_7));
         //pathplan(p,aax,aay,aaz,pointA3,quatA3);
         //moveToWrapper2(pointA3,quatA4);
@@ -128,10 +141,15 @@ public class YourService extends KiboRpcService {
         //double distance = - array[i][2] + aay - 0.1328;
         //Log.e("Target plane is located in", String.valueOf(distance));
         long t_9 = System.currentTimeMillis()/1000;
-
+        get_runtime();
         Log.e("Time:HazCam", String.valueOf(t_9 - t_8));
-        moveToWrapper(aax, aay, aaz, quatA3.getX(), quatA3.getY(), quatA3.getZ(), quatA3.getW());
+        //moveToWrapper(aax, aay, aaz, quatA3.getX(), quatA3.getY(), quatA3.getZ(), quatA3.getW());
+        Kinematics k1 = api.getTrustedRobotKinematics();
+        Point p1 = k1.getPosition();
+        Quaternion q1 = k1.getOrientation();
+        Log.e("Position and Orientation", p1.toString() + q1.toString());
         long t_10 = System.currentTimeMillis()/1000;
+        get_runtime();
         Log.e("Time:stay", String.valueOf(t_10 - t_9));
 
 
@@ -141,43 +159,70 @@ public class YourService extends KiboRpcService {
         //double[] target_center2 = readARcode_from_one();
         Log.e("finished reading ARcode", Arrays.toString(target_center));
         long t_11 = System.currentTimeMillis()/1000;
+        get_runtime();
         Log.e("Time:read AR", String.valueOf(t_11 - t_10));
         //ターゲットの中心座標を１つのARの位置から求める
         //Log.e("finished reading ARcode2", Arrays.toString(target_center2));
+        double[] navcam = {0.1177, -0.0422, -0.0826};
+        double[] laser = {0.1302, 0.0572, -0.1111};
+        double[] beam = {1, 0, 0};
 
-        //opencvの座標系からastrobeeの座標系に変換
-        target_center = change_origin(target_center);
+        //opencvの座標系からastrobeeの座標系に変換(Navcam原点)
+        double[] target_center_navcam = change_origin_opencv2astrobee(target_center);
+        Log.e("target_center_navcam", '['+String.valueOf(target_center_navcam[0])+','+String.valueOf(target_center_navcam[1])+','+String.valueOf(target_center_navcam[2])+']');
+        //astrobee重心原点
+        double [] target_center_astrobeecov = M.addVec(target_center_navcam, navcam);
+        Log.e("target_center_astrobeecov", '['+String.valueOf(target_center_astrobeecov[0])+','+String.valueOf(target_center_astrobeecov[1])+','+String.valueOf(target_center_astrobeecov[2])+']');
+        //kibo座標系
+        double[] target_center_kibo = change_origin_astrobee2kibo(k1, target_center_astrobeecov);
+        Log.e("target_center_kibo", '['+String.valueOf(target_center_kibo[0])+','+String.valueOf(target_center_kibo[1])+','+String.valueOf(target_center_kibo[2])+']');
+
         //double[] a = {0.15, 0, 0};
 
         //target_center = M.addVec(target_center, a);
         //target_center[0] = array[i][2] + 0.1328;
-        target_center[0] = 10.5843 + aay;
+        //target_center[0] = 10.5843 + p1.getY();
         Log.e("finished changing the origin", Arrays.toString(target_center));
-        double[] navcam = {0.1177, -0.0422, -0.0826};
-        double[] laser = {0.1302, 0.0572, -0.1111};
-        double[] beam = {1, 0, 0};
+        Kinematics k2 = api.getTrustedRobotKinematics();
+        Point p2 = k2.getPosition();
+        Quaternion q2 = k2.getOrientation();
+        Log.e("Position and Orientation", p2.toString() + q2.toString());
+
+        target_center_astrobeecov = kt_ckibo2t_castrobee(k2, target_center_kibo);
+        Log.e("target_center_astrobeecov", '['+String.valueOf(target_center_astrobeecov[0])+','+String.valueOf(target_center_astrobeecov[1])+','+String.valueOf(target_center_astrobeecov[2])+']');
+        target_center_navcam = M.diffVec(target_center_astrobeecov, navcam);
+        Log.e("target_center_navcam", '['+String.valueOf(target_center_navcam[0])+','+String.valueOf(target_center_navcam[1])+','+String.valueOf(target_center_navcam[2])+']');
+
+
+
         //レーザーをターゲット中心に向けるクォータニオンq_target
         Log.e("calculate q_target", "");
-        Quaternion q_target = rotatetotarget(target_center, navcam, laser, beam);
+        Quaternion q_target = rotatetotarget(target_center_navcam, navcam, laser, beam);
 
         String del = ":";
         //astrobee座標系でのクォータニオンの計算終了
         Log.e("finished calculating q_target in astrobee's origin", String.valueOf(q_target.getX()) + del + String.valueOf(q_target.getY()) + del + String.valueOf(q_target.getZ()) + del + String.valueOf(q_target.getW()));
-        q_target = M.mul(quatA3, q_target);
+        q_target = M.mul(q2, q_target);
         //kibo座標系でのクォータニオンの計算終了
         Log.e("finished calculating q_target in kibo' origin", String.valueOf(q_target.getX()) + del + String.valueOf(q_target.getY()) + del + String.valueOf(q_target.getZ()) + del + String.valueOf(q_target.getW()));
         //moveToWrapper(axa, aya, aza, quatA3.getX(), quatA3.getY(), quatA3.getZ(), quatA3.getW());
         //moveToWrapper2(pointA3,quatA4);
 
-        double[] navcam2laser = M.diffVec(laser, navcam);
-        //relativemoveToWrapper(0,0,0, q_target.getX(), q_target.getY(), q_target.getZ(), q_target.getW());
-
         long t_12 = System.currentTimeMillis()/1000;
+        get_runtime();
         Log.e("Time:calculate q_target", String.valueOf(t_12 - t_11));
-        moveToWrapper(aax,aay,aaz, q_target.getX(), q_target.getY(), q_target.getZ(), q_target.getW());
+        api.laserControl(true);
+        relativemoveToWrapper(0,0,0, q_target.getX(), q_target.getY(), q_target.getZ(), q_target.getW());
         Log.e("finished rotating", "");
-        long t_13 = System.currentTimeMillis()/1000;
+        Kinematics k3 = api.getTrustedRobotKinematics();
+        Point p3 = k3.getPosition();
+        Quaternion q3 = k3.getOrientation();
+        Log.e("Position and Orientation", p3.toString() + q3.toString());
+        double s = k2laser_accuracy(k3, target_center_kibo, laser);
+        Log.e("s is ",  String.valueOf(s));
 
+        long t_13 = System.currentTimeMillis()/1000;
+        get_runtime();
         Log.e("Time:rotate q_target", String.valueOf(t_13 - t_12));
         //Log.e("finish read ARcode", rotationMat.dump());
         //int corners = readARcode2();
@@ -219,35 +264,63 @@ public class YourService extends KiboRpcService {
         String zero = ARcode.toString();
         Log.e("ARcode Image", zero);
         */
+        Log.e("sleep 5 sec", "");
+        try {
+            Thread.sleep(5000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         Log.e("Laser", "Bee start irradiating the laser.");
-        api.laserControl(true);
+        //api.laserControl(true);
         long t_14 = System.currentTimeMillis()/1000;
+        get_runtime();
         Log.e("Time:start irradiating the laser", String.valueOf(t_14 - t_13));
 
         // Take a snapshot
         Log.e("Snapshot", "Bee start taking a snapshot .");
-        moveToWrapper(aax,aay,aaz, q_target.getX(), q_target.getY(), q_target.getZ(), q_target.getW());
+        //moveToWrapper(aax,aay,aaz, q_target.getX(), q_target.getY(), q_target.getZ(), q_target.getW());
         api.takeSnapshot();
         Log.e("Snapshot", "Bee finished taking a snapshot .");
 
         long t_15 = System.currentTimeMillis()/1000;
+        get_runtime();
         Log.e("Time:Snap shot", String.valueOf(t_15 - t_14));
 
         // turn off the laser
         api.laserControl(false);
         Log.e("Time:Laser", "Bee quit irradiating the laser.");
         long t_16 = System.currentTimeMillis()/1000;
+        get_runtime();
         Log.e("Time:finish irradiating the laser", String.valueOf(t_16 - t_15));
+
+        Kinematics k4 = api.getTrustedRobotKinematics();
+        Point p4 = k4.getPosition();
+        Quaternion q4 = k4.getOrientation();
+        Log.e("Position and Orientation", p4.toString() + q4.toString());
+        relativemoveToWrapper(-0.05, 0, 0, q_target.getX(), q_target.getY(), q_target.getZ(), q_target.getW());
+        Log.e("sleep 5 sec", "");
+        try {
+            Thread.sleep(5000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        Kinematics k5 = api.getTrustedRobotKinematics();
+        Point p5 = k5.getPosition();
+        Quaternion q5 = k5.getOrientation();
+        Log.e("Position and Orientation", p5.toString() + q5.toString());
+
 
         //Bへの移動
         pathplan2(p,aax,aay,aaz,pointA3,quatA3);
         long t_17 = System.currentTimeMillis()/1000;
+        get_runtime();
         Log.e("Time:pathplan2", String.valueOf(t_17 - t_16));
 
         // Send mission completion
         api.reportMissionCompletion();
         Log.e("MissionCompletion", "Mission completed.");
         long t_18 = System.currentTimeMillis()/1000;
+        get_runtime();
         Log.e("Time:Mission completed", String.valueOf(t_18 - t_17));
     }
 
@@ -322,12 +395,31 @@ public class YourService extends KiboRpcService {
         }
     }
 
-    public double[] change_origin(double[] point) {
+    public double[] change_origin_opencv2astrobee(double[] point) {
         double[] changed_point = new double[3];
         changed_point[0] = point[2];
         changed_point[1] = point[0];
         changed_point[2] = point[1];
         return changed_point;
+    }
+    public double[] change_origin_astrobee2kibo(Kinematics k, double[] point){
+        double[] point_rotated = M.rotateVec(point, k.getOrientation());
+        double[] k_position = {k.getPosition().getX(), k.getPosition().getY(), k.getPosition().getZ()};
+        double[] point_kibo = M.addVec(k_position, point_rotated);
+        return point_kibo;
+    }
+
+    public double[] kt_ckibo2t_castrobee(Kinematics k, double[] point){
+        double[] k_position = {k.getPosition().getX(), k.getPosition().getY(), k.getPosition().getZ()};
+        double[] point_astrobee = M.rotateVec(M.diffVec(point, k_position), M.rev(k.getOrientation()));
+        return point_astrobee;
+    }
+
+    public double k2laser_accuracy(Kinematics k, double[] target_center_kibo, double[] laser){
+        double[] k_position = {k.getPosition().getX(), k.getPosition().getY(), k.getPosition().getZ()};
+        double s = M.rotateVec(M.diffVec(k_position, target_center_kibo), M.rev(k.getOrientation()))[1] - laser[0];
+        return s;
+
     }
 
 /*
@@ -552,6 +644,23 @@ public class YourService extends KiboRpcService {
 
  */
     }
+
+    public void get_runtime(){
+        Runtime runtime = Runtime.getRuntime();
+        Log.v("Runtime", "totalMemory[KB] = " + (int)(runtime.totalMemory()/1024));
+        Log.v("Runtime", "freeMemory[KB] = " + (int)(runtime.freeMemory()/1024));
+        Log.v("Runtime", "usedMemory[KB] = " + (int)( (runtime.totalMemory() - runtime.freeMemory())/1024) );
+        Log.v("Runtime", "maxMemory[KB] = " + (int)(runtime.maxMemory()/1024));
+    }
+
+    public double[] k2t_castrobee(double[] target_center, Kinematics k){
+        double[] k_position = {k.getPosition().getX(), k.getPosition().getY(), k.getPosition().getZ()};
+        double[] t_castrobee = M.addVec(target_center, k_position);
+        return t_castrobee;
+
+    }
+
+
 
     public double[][] point_cloud2list(PointCloud point_cloud){
         Point[] PointArray = point_cloud.getPointArray();
