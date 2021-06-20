@@ -644,11 +644,14 @@ public class YourService extends KiboRpcService {
             moveToWrapper2(pointB,quatA);
             Log.e("finished moving 2", "");
         }else if (p == 6) {
-            Point pointAA1 = new Point(10.6,-8.8,5.25);
+            Point pointAA1 = new Point(10.8,ady,adz);
+            Point pointAA2 = new Point(10.6,-8.8,5.25);
             moveToWrapper2(pointAA1,quatA);
             Log.e("finished moving 1", "");
-            moveToWrapper2(pointB,quatA);
+            moveToWrapper2(pointAA2,quatA);
             Log.e("finished moving 2", "");
+            moveToWrapper2(pointB,quatA);
+            Log.e("finished moving 3", "");
         }else{
             Point pointAA1 = new Point(11.5,ady,adz);
             //Point pointAA2 = new Point(pointAA1.getX(),ady,pointA.getZ());
